@@ -576,6 +576,10 @@ let selectedLottery = "";
 let ticketCount = 2;
 
 
+/* =========================
+   会場データ
+========================= */
+
 const venueData = {
 
 dome: [
@@ -659,7 +663,9 @@ location:"千葉県船橋市"
 };
 
 
-/* 画面切り替え */
+/* =========================
+   画面切り替え
+========================= */
 
 function showScreen(id){
 
@@ -679,7 +685,9 @@ behavior:"smooth"
 }
 
 
-/* スタート */
+/* =========================
+   スタート
+========================= */
 
 document.getElementById("startButton").addEventListener("click",function(){
 
@@ -690,7 +698,9 @@ showScreen("typeScreen");
 });
 
 
-/* 会場タイプ */
+/* =========================
+   会場タイプ
+========================= */
 
 document.querySelectorAll(".type-card").forEach(function(button){
 
@@ -738,7 +748,9 @@ showScreen("venueScreen");
 });
 
 
-/* 抽選方式 */
+/* =========================
+   抽選方式
+========================= */
 
 document.querySelectorAll(".lottery-option").forEach(function(button){
 
@@ -761,7 +773,9 @@ checkReady();
 });
 
 
-/* マイナス */
+/* =========================
+   枚数マイナス
+========================= */
 
 document.getElementById("minus").addEventListener("click",function(){
 
@@ -777,7 +791,9 @@ ticketCount;
 });
 
 
-/* プラス */
+/* =========================
+   枚数プラス
+========================= */
 
 document.getElementById("plus").addEventListener("click",function(){
 
@@ -793,7 +809,9 @@ ticketCount;
 });
 
 
-/* 抽選ボタン */
+/* =========================
+   抽選ボタン準備
+========================= */
 
 function checkReady(){
 
@@ -803,7 +821,9 @@ document.getElementById("lotteryButton").disabled =
 }
 
 
-/* 当選確率 */
+/* =========================
+   当選確率
+========================= */
 
 function getWinRate(){
 
@@ -828,7 +848,9 @@ return 0.5;
 }
 
 
-/* 抽選方式名 */
+/* =========================
+   抽選方式名
+========================= */
 
 function getLotteryName(){
 
@@ -853,9 +875,649 @@ return "";
 }
 
 
-/* 座席作成 */
+/* =========================
+   席運表示
+========================= */
+
+function getLuck(score){
+
+if(score >= 92){
+
+return "🌟 超神席！！";
+
+}else if(score >= 80){
+
+return "🔥 神席クラス！";
+
+}else if(score >= 65){
+
+return "✨ かなり良い席！";
+
+}else if(score >= 40){
+
+return "🙂 まずまずの席";
+
+}else{
+
+return "😢 ちょっと遠め…";
+
+}
+
+}
+
+
+/* =========================
+   東京ドーム 2階
+   番号から最大列数を計算
+========================= */
+
+function getTokyoDomeSecondFloorMaxRow(number){
+
+/*
+1～100番
+→ 30列
+*/
+
+if(number <= 100){
+
+return 30;
+
+}
+
+
+/*
+101～340番
+→ 30列から21列へ
+*/
+
+if(number <= 340){
+
+const progress =
+(number - 101) / (340 - 101);
+
+return Math.max(
+21,
+Math.round(30 - 9 * progress)
+);
+
+}
+
+
+/*
+341～461番
+→ 21列から5列へ
+*/
+
+if(number <= 461){
+
+const progress =
+(number - 341) / (461 - 341);
+
+return Math.max(
+5,
+Math.round(21 - 16 * progress)
+);
+
+}
+
+
+/*
+462～515番
+→ 1列
+*/
+
+return 1;
+
+}
+
+
+/* =========================
+   東京ドーム 2階
+   連番が入る範囲を考慮
+========================= */
+
+function getTokyoDomeSecondFloorStartNumber(maxNumber){
+
+return Math.floor(
+Math.random() *
+(maxNumber - ticketCount + 1)
+) + 1;
+
+}
+
+
+/* =========================
+   座席作成
+========================= */
 
 function createSeat(){
+
+
+/* =================================================
+   東京ドーム
+================================================= */
+
+if(selectedVenue && selectedVenue.name === "東京ドーム"){
+
+
+/* =========================
+   アリーナ
+========================= */
+
+/*
+A～Fの出現率
+A：神席なので少し少なめ
+B～D：多め
+E～F：少なめ
+*/
+
+const arenaChance = Math.random();
+
+if(arenaChance < 0.42){
+
+const blockRandom = Math.random();
+
+let block;
+
+if(blockRandom < 0.12){
+
+block = "A";
+
+}else if(blockRandom < 0.32){
+
+block = "B";
+
+}else if(blockRandom < 0.53){
+
+block = "C";
+
+}else if(blockRandom < 0.73){
+
+block = "D";
+
+}else if(blockRandom < 0.88){
+
+block = "E";
+
+}else{
+
+block = "F";
+
+}
+
+
+/* 各ブロックの横方向ブロック数 */
+
+const blockCounts = {
+
+A:16,
+B:17,
+C:17,
+D:15,
+E:13,
+F:12
+
+};
+
+
+/* ブロック番号 */
+
+const blockNumber =
+Math.floor(
+Math.random() * blockCounts[block]
+) + 1;
+
+
+/* ブロック内の列 */
+
+const row =
+Math.floor(Math.random() * 15) + 1;
+
+
+/* ブロック内の番号 */
+
+const firstNumber =
+Math.floor(
+Math.random() *
+(12 - ticketCount + 1)
+) + 1;
+
+const numbers = [];
+
+for(let i = 0; i < ticketCount; i++){
+
+numbers.push(firstNumber + i);
+
+}
+
+
+/* A～Fによる席運 */
+
+let score;
+
+if(block === "A"){
+
+score =
+Math.floor(Math.random() * 11) + 90;
+
+}else if(
+block === "B" ||
+block === "C" ||
+block === "D"
+){
+
+score =
+Math.floor(Math.random() * 21) + 68;
+
+}else{
+
+score =
+Math.floor(Math.random() * 26) + 40;
+
+}
+
+
+return {
+
+block:
+"アリーナ " +
+block +
+"ブロック " +
+blockNumber,
+
+row:row,
+
+numbers:numbers,
+
+score:score,
+
+luck:getLuck(score)
+
+};
+
+}
+
+
+/* =========================
+   1階スタンド
+========================= */
+
+const firstFloorChance = Math.random();
+
+if(firstFloorChance < 0.38){
+
+const side =
+Math.random() < 0.5
+? "1塁側"
+: "3塁側";
+
+
+/* 1～500番 */
+
+const maxStart =
+500 - ticketCount + 1;
+
+const firstNumber =
+Math.floor(
+Math.random() * maxStart
+) + 1;
+
+
+/* ゲート */
+
+let gate;
+
+if(side === "1塁側"){
+
+if(firstNumber <= 80){
+
+gate = 22;
+
+}else if(firstNumber <= 240){
+
+gate = 21;
+
+}else{
+
+gate = 20;
+
+}
+
+}else{
+
+if(firstNumber <= 80){
+
+gate = 22;
+
+}else if(firstNumber <= 240){
+
+gate = 23;
+
+}else{
+
+gate = 24;
+
+}
+
+}
+
+
+/* 1～45列 */
+
+const row =
+Math.floor(Math.random() * 45) + 1;
+
+const numbers = [];
+
+for(let i = 0; i < ticketCount; i++){
+
+numbers.push(
+firstNumber + i
+);
+
+}
+
+
+/*
+前方ほど良い。
+後方ほど悪い。
+*/
+
+let score;
+
+if(row <= 8){
+
+score =
+Math.floor(Math.random() * 16) + 78;
+
+}else if(row <= 18){
+
+score =
+Math.floor(Math.random() * 21) + 62;
+
+}else if(row <= 30){
+
+score =
+Math.floor(Math.random() * 21) + 45;
+
+}else{
+
+score =
+Math.floor(Math.random() * 21) + 25;
+
+}
+
+
+return {
+
+block:
+"1階 " +
+side +
+"・" +
+gate +
+"ゲート",
+
+row:row,
+
+numbers:numbers,
+
+score:score,
+
+luck:getLuck(score)
+
+};
+
+}
+
+
+/* =========================
+   2階スタンド
+========================= */
+
+const secondFloorChance = Math.random();
+
+if(secondFloorChance < 0.93){
+
+const side =
+Math.random() < 0.5
+? "1塁側"
+: "3塁側";
+
+const gate =
+side === "1塁側"
+? 40
+: 41;
+
+
+/*
+1～515番。
+複数枚でも515を超えない。
+*/
+
+const maxStart =
+515 - ticketCount + 1;
+
+const firstNumber =
+Math.floor(
+Math.random() * maxStart
+) + 1;
+
+
+/*
+その番号の場所に存在する最大列数
+*/
+
+const maxRow =
+getTokyoDomeSecondFloorMaxRow(firstNumber);
+
+
+/*
+1～最大列
+*/
+
+const row =
+Math.floor(
+Math.random() * maxRow
+) + 1;
+
+const numbers = [];
+
+for(let i = 0; i < ticketCount; i++){
+
+numbers.push(
+firstNumber + i
+);
+
+}
+
+
+/*
+2階は基本的に良くない。
+
+特に最後方の列はかなり悪い。
+*/
+
+let score;
+
+if(maxRow === 1){
+
+score =
+Math.floor(Math.random() * 11) + 5;
+
+}else if(row === maxRow){
+
+score =
+Math.floor(Math.random() * 11) + 5;
+
+}else if(row >= maxRow - 2){
+
+score =
+Math.floor(Math.random() * 11) + 12;
+
+}else{
+
+score =
+Math.floor(Math.random() * 21) + 20;
+
+}
+
+
+return {
+
+block:
+"2階 " +
+side +
+"・" +
+gate +
+"ゲート",
+
+row:row,
+
+numbers:numbers,
+
+score:score,
+
+luck:getLuck(score)
+
+};
+
+}
+
+
+/* =========================
+   外野
+========================= */
+
+const side =
+Math.random() < 0.5
+? "ライト"
+: "レフト";
+
+const gate =
+side === "ライト"
+? 25
+: 11;
+
+
+/*
+通常外野 501～560
+*/
+
+const outfieldChance = Math.random();
+
+if(outfieldChance < 0.88){
+
+const maxStart =
+560 - ticketCount + 1;
+
+const firstNumber =
+Math.floor(
+Math.random() * (maxStart - 501 + 1)
+) + 501;
+
+const row =
+Math.floor(Math.random() * 21) + 1;
+
+const numbers = [];
+
+for(let i = 0; i < ticketCount; i++){
+
+numbers.push(
+firstNumber + i
+);
+
+}
+
+
+/*
+外野はどこも「まあまあ」
+*/
+
+const score =
+Math.floor(Math.random() * 21) + 45;
+
+
+return {
+
+block:
+side +
+"外野・" +
+gate +
+"ゲート",
+
+row:row,
+
+numbers:numbers,
+
+score:score,
+
+luck:getLuck(score)
+
+};
+
+}
+
+
+/* =========================
+   見切れ
+========================= */
+
+const maxStart =
+600 - ticketCount + 1;
+
+const firstNumber =
+Math.floor(
+Math.random() *
+(maxStart - 561 + 1)
+) + 561;
+
+const row =
+Math.floor(Math.random() * 21) + 1;
+
+const numbers = [];
+
+for(let i = 0; i < ticketCount; i++){
+
+numbers.push(
+firstNumber + i
+);
+
+}
+
+
+/*
+見切れは悪い。
+*/
+
+const score =
+Math.floor(Math.random() * 21) + 10;
+
+
+return {
+
+block:
+"見切れ " +
+side +
+"・" +
+gate +
+"ゲート",
+
+row:row,
+
+numbers:numbers,
+
+score:score,
+
+luck:getLuck(score)
+
+};
+
+}
+
+
+/* =================================================
+   東京ドーム以外
+================================================= */
 
 let areas;
 
@@ -888,76 +1550,80 @@ areas = [
 
 }
 
+
 const block =
-areas[Math.floor(Math.random() * areas.length)];
+areas[
+Math.floor(Math.random() * areas.length)
+];
+
 
 const row =
 Math.floor(Math.random() * 30) + 1;
 
+
+const maxNumber =
+60 - ticketCount + 1;
+
 const firstNumber =
-Math.floor(Math.random() * 60) + 1;
-
-const score =
-Math.floor(Math.random() * 101);
-
-let luck;
-
-if(score >= 92){
-
-luck = "🌟 超神席！！";
-
-}else if(score >= 80){
-
-luck = "🔥 神席クラス！";
-
-}else if(score >= 65){
-
-luck = "✨ かなり良い席！";
-
-}else if(score >= 40){
-
-luck = "🙂 まずまずの席";
-
-}else{
-
-luck = "😢 ちょっと遠め…";
-
-}
+Math.floor(
+Math.random() * maxNumber
+) + 1;
 
 
 const numbers = [];
 
 for(let i = 0; i < ticketCount; i++){
 
-numbers.push(firstNumber + i);
+numbers.push(
+firstNumber + i
+);
 
 }
 
+
+const score =
+Math.floor(Math.random() * 101);
+
+
 return {
+
 block:block,
+
 row:row,
+
 numbers:numbers,
+
 score:score,
-luck:luck
+
+luck:getLuck(score)
+
 };
 
 }
 
 
-/* 星 */
+/* =========================
+   星
+========================= */
 
 function getStars(score){
 
 if(score >= 80){
+
 return "★★★★★";
+
 }
 
 if(score >= 65){
+
 return "★★★★☆";
+
 }
 
 if(score >= 40){
+
 return "★★★☆☆";
+
 }
 
 return "★★☆☆☆";
@@ -965,17 +1631,24 @@ return "★★☆☆☆";
 }
 
 
-/* 抽選実行 */
+/* =========================
+   抽選実行
+========================= */
 
 function runLottery(){
 
-const loading = document.getElementById("loading");
+const loading =
+document.getElementById("loading");
 
-const result = document.getElementById("result");
+const result =
+document.getElementById("result");
 
-const button = document.getElementById("lotteryButton");
+const button =
+document.getElementById("lotteryButton");
+
 
 button.disabled = true;
+
 
 document.querySelectorAll(".lottery-option").forEach(function(b){
 
@@ -983,45 +1656,58 @@ b.disabled = true;
 
 });
 
+
 document.getElementById("minus").disabled = true;
 
 document.getElementById("plus").disabled = true;
 
+
 result.style.display = "none";
 
-loading.innerHTML = "🎫 抽選中……";
+loading.innerHTML =
+"🎫 抽選中……";
 
 
 setTimeout(function(){
 
-loading.innerHTML = "🔎 当落結果を確認中……";
+loading.innerHTML =
+"🔎 当落結果を確認中……";
 
 
 setTimeout(function(){
 
-loading.innerHTML = "💺 座席を決定しています……";
+loading.innerHTML =
+"💺 座席を決定しています……";
 
 
 setTimeout(function(){
 
-const win = Math.random() < getWinRate();
+const win =
+Math.random() < getWinRate();
 
 loading.innerHTML = "";
 
 
 if(win){
 
-const seat = createSeat();
+const seat =
+createSeat();
 
-const numbers = seat.numbers.join("・");
+const numbers =
+seat.numbers.join("・");
+
 
 result.innerHTML =
 
 "<div class='result-card'>" +
 
-"<div class='result-label'>LOTTERY RESULT</div>" +
+"<div class='result-label'>" +
+"LOTTERY RESULT" +
+"</div>" +
 
-"<div class='result-title'>🎉 当選！！</div>" +
+"<div class='result-title'>" +
+"🎉 当選！！" +
+"</div>" +
 
 "<div class='result-info'>" +
 
@@ -1041,7 +1727,9 @@ ticketCount +
 
 "</div>" +
 
-"<div class='seat-label'>YOUR SEAT</div>" +
+"<div class='seat-label'>" +
+"YOUR SEAT" +
+"</div>" +
 
 "<div class='seat-main'>" +
 
@@ -1055,7 +1743,9 @@ numbers +
 
 "</div>" +
 
-"<div class='seat-sub'>※架空の座席です</div>" +
+"<div class='seat-sub'>" +
+"※架空の座席です" +
+"</div>" +
 
 "<div class='luck'>" +
 seat.luck +
@@ -1083,9 +1773,13 @@ result.innerHTML =
 
 "<div class='result-card'>" +
 
-"<div class='result-label'>LOTTERY RESULT</div>" +
+"<div class='result-label'>" +
+"LOTTERY RESULT" +
+"</div>" +
 
-"<div class='result-title'>😭 落選…</div>" +
+"<div class='result-title'>" +
+"😭 落選…" +
+"</div>" +
 
 "<div class='result-info'>" +
 
@@ -1121,14 +1815,18 @@ ticketCount +
 }
 
 
-result.style.display = "block";
+result.style.display =
+"block";
+
 
 result.scrollIntoView({
 behavior:"smooth"
 });
 
 
-document.getElementById("retryButton").addEventListener("click",function(){
+document
+.getElementById("retryButton")
+.addEventListener("click",function(){
 
 location.reload();
 
@@ -1144,9 +1842,13 @@ location.reload();
 }
 
 
-/* 抽選ボタン */
+/* =========================
+   抽選ボタン
+========================= */
 
-document.getElementById("lotteryButton").addEventListener("click",function(){
+document
+.getElementById("lotteryButton")
+.addEventListener("click",function(){
 
 runLottery();
 

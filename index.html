@@ -774,7 +774,7 @@ checkReady();
 
 
 /* =========================
-   枚数マイナス
+   枚数
 ========================= */
 
 document.getElementById("minus").addEventListener("click",function(){
@@ -790,10 +790,6 @@ ticketCount;
 
 });
 
-
-/* =========================
-   枚数プラス
-========================= */
 
 document.getElementById("plus").addEventListener("click",function(){
 
@@ -876,59 +872,74 @@ return "";
 
 
 /* =========================
-   席運表示
+   席運
 ========================= */
 
 function getLuck(score){
 
-if(score >= 92){
+if(score === 5){
 
 return "🌟 超神席！！";
 
-}else if(score >= 80){
+}
+
+if(score === 4){
 
 return "🔥 神席クラス！";
 
-}else if(score >= 65){
+}
+
+if(score === 3){
 
 return "✨ かなり良い席！";
 
-}else if(score >= 40){
-
-return "🙂 まずまずの席";
-
-}else{
+}
 
 return "😢 ちょっと遠め…";
 
 }
 
+
+/* =========================
+   星
+========================= */
+
+function getStars(score){
+
+if(score === 5){
+
+return "★★★★★";
+
+}
+
+if(score === 4){
+
+return "★★★★☆";
+
+}
+
+if(score === 3){
+
+return "★★★☆☆";
+
+}
+
+return "★★☆☆☆";
+
 }
 
 
 /* =========================
-   東京ドーム 2階
-   番号から最大列数を計算
+   東京ドーム2階
 ========================= */
 
 function getTokyoDomeSecondFloorMaxRow(number){
-
-/*
-1～100番
-→ 30列
-*/
 
 if(number <= 100){
 
 return 30;
 
 }
-
-
-/*
-101～340番
-→ 30列から21列へ
-*/
 
 if(number <= 340){
 
@@ -942,12 +953,6 @@ Math.round(30 - 9 * progress)
 
 }
 
-
-/*
-341～461番
-→ 21列から5列へ
-*/
-
 if(number <= 461){
 
 const progress =
@@ -960,28 +965,7 @@ Math.round(21 - 16 * progress)
 
 }
 
-
-/*
-462～515番
-→ 1列
-*/
-
 return 1;
-
-}
-
-
-/* =========================
-   東京ドーム 2階
-   連番が入る範囲を考慮
-========================= */
-
-function getTokyoDomeSecondFloorStartNumber(maxNumber){
-
-return Math.floor(
-Math.random() *
-(maxNumber - ticketCount + 1)
-) + 1;
 
 }
 
@@ -1004,38 +988,30 @@ if(selectedVenue && selectedVenue.name === "東京ドーム"){
    アリーナ
 ========================= */
 
-/*
-A～Fの出現率
-A：神席なので少し少なめ
-B～D：多め
-E～F：少なめ
-*/
+if(Math.random() < 0.42){
 
-const arenaChance = Math.random();
-
-if(arenaChance < 0.42){
-
-const blockRandom = Math.random();
+const random =
+Math.random();
 
 let block;
 
-if(blockRandom < 0.12){
+if(random < 0.12){
 
 block = "A";
 
-}else if(blockRandom < 0.32){
+}else if(random < 0.32){
 
 block = "B";
 
-}else if(blockRandom < 0.53){
+}else if(random < 0.53){
 
 block = "C";
 
-}else if(blockRandom < 0.73){
+}else if(random < 0.73){
 
 block = "D";
 
-}else if(blockRandom < 0.88){
+}else if(random < 0.88){
 
 block = "E";
 
@@ -1045,8 +1021,6 @@ block = "F";
 
 }
 
-
-/* 各ブロックの横方向ブロック数 */
 
 const blockCounts = {
 
@@ -1060,21 +1034,15 @@ F:12
 };
 
 
-/* ブロック番号 */
-
 const blockNumber =
 Math.floor(
 Math.random() * blockCounts[block]
 ) + 1;
 
 
-/* ブロック内の列 */
-
 const row =
 Math.floor(Math.random() * 15) + 1;
 
-
-/* ブロック内の番号 */
 
 const firstNumber =
 Math.floor(
@@ -1082,23 +1050,29 @@ Math.random() *
 (12 - ticketCount + 1)
 ) + 1;
 
+
 const numbers = [];
 
 for(let i = 0; i < ticketCount; i++){
 
-numbers.push(firstNumber + i);
+numbers.push(
+firstNumber + i
+);
 
 }
 
 
-/* A～Fによる席運 */
+/*
+Aだけ★★★★★
+B～Dは★★★★☆
+E～Fは★★★☆☆
+*/
 
 let score;
 
 if(block === "A"){
 
-score =
-Math.floor(Math.random() * 11) + 90;
+score = 5;
 
 }else if(
 block === "B" ||
@@ -1106,13 +1080,11 @@ block === "C" ||
 block === "D"
 ){
 
-score =
-Math.floor(Math.random() * 21) + 68;
+score = 4;
 
 }else{
 
-score =
-Math.floor(Math.random() * 26) + 40;
+score = 3;
 
 }
 
@@ -1142,9 +1114,7 @@ luck:getLuck(score)
    1階スタンド
 ========================= */
 
-const firstFloorChance = Math.random();
-
-if(firstFloorChance < 0.38){
+if(Math.random() < 0.38){
 
 const side =
 Math.random() < 0.5
@@ -1152,10 +1122,9 @@ Math.random() < 0.5
 : "3塁側";
 
 
-/* 1～500番 */
-
 const maxStart =
 500 - ticketCount + 1;
+
 
 const firstNumber =
 Math.floor(
@@ -1163,9 +1132,8 @@ Math.random() * maxStart
 ) + 1;
 
 
-/* ゲート */
-
 let gate;
+
 
 if(side === "1塁側"){
 
@@ -1202,10 +1170,9 @@ gate = 24;
 }
 
 
-/* 1～45列 */
-
 const row =
 Math.floor(Math.random() * 45) + 1;
+
 
 const numbers = [];
 
@@ -1219,31 +1186,24 @@ firstNumber + i
 
 
 /*
-前方ほど良い。
-後方ほど悪い。
+1～5列 → ★★★★☆
+6～30列 → ★★★☆☆
+31～45列 → ★★☆☆☆
 */
 
 let score;
 
-if(row <= 8){
+if(row <= 5){
 
-score =
-Math.floor(Math.random() * 16) + 78;
-
-}else if(row <= 18){
-
-score =
-Math.floor(Math.random() * 21) + 62;
+score = 4;
 
 }else if(row <= 30){
 
-score =
-Math.floor(Math.random() * 21) + 45;
+score = 3;
 
 }else{
 
-score =
-Math.floor(Math.random() * 21) + 25;
+score = 2;
 
 }
 
@@ -1274,14 +1234,13 @@ luck:getLuck(score)
    2階スタンド
 ========================= */
 
-const secondFloorChance = Math.random();
-
-if(secondFloorChance < 0.93){
+if(Math.random() < 0.93){
 
 const side =
 Math.random() < 0.5
 ? "1塁側"
 : "3塁側";
+
 
 const gate =
 side === "1塁側"
@@ -1289,13 +1248,9 @@ side === "1塁側"
 : 41;
 
 
-/*
-1～515番。
-複数枚でも515を超えない。
-*/
-
 const maxStart =
 515 - ticketCount + 1;
+
 
 const firstNumber =
 Math.floor(
@@ -1303,22 +1258,15 @@ Math.random() * maxStart
 ) + 1;
 
 
-/*
-その番号の場所に存在する最大列数
-*/
-
 const maxRow =
 getTokyoDomeSecondFloorMaxRow(firstNumber);
 
-
-/*
-1～最大列
-*/
 
 const row =
 Math.floor(
 Math.random() * maxRow
 ) + 1;
+
 
 const numbers = [];
 
@@ -1332,32 +1280,19 @@ firstNumber + i
 
 
 /*
-2階は基本的に良くない。
-
-特に最後方の列はかなり悪い。
+1～3列 → ★★★☆☆
+4列以降 → ★★☆☆☆
 */
 
 let score;
 
-if(maxRow === 1){
+if(row <= 3){
 
-score =
-Math.floor(Math.random() * 11) + 5;
-
-}else if(row === maxRow){
-
-score =
-Math.floor(Math.random() * 11) + 5;
-
-}else if(row >= maxRow - 2){
-
-score =
-Math.floor(Math.random() * 11) + 12;
+score = 3;
 
 }else{
 
-score =
-Math.floor(Math.random() * 21) + 20;
+score = 2;
 
 }
 
@@ -1393,6 +1328,7 @@ Math.random() < 0.5
 ? "ライト"
 : "レフト";
 
+
 const gate =
 side === "ライト"
 ? 25
@@ -1400,23 +1336,25 @@ side === "ライト"
 
 
 /*
-通常外野 501～560
+通常外野
 */
 
-const outfieldChance = Math.random();
-
-if(outfieldChance < 0.88){
+if(Math.random() < 0.88){
 
 const maxStart =
 560 - ticketCount + 1;
 
+
 const firstNumber =
 Math.floor(
-Math.random() * (maxStart - 501 + 1)
+Math.random() *
+(maxStart - 501 + 1)
 ) + 501;
+
 
 const row =
 Math.floor(Math.random() * 21) + 1;
+
 
 const numbers = [];
 
@@ -1430,11 +1368,21 @@ firstNumber + i
 
 
 /*
-外野はどこも「まあまあ」
+1～3列 → ★★★☆☆
+4～21列 → ★★☆☆☆
 */
 
-const score =
-Math.floor(Math.random() * 21) + 45;
+let score;
+
+if(row <= 3){
+
+score = 3;
+
+}else{
+
+score = 2;
+
+}
 
 
 return {
@@ -1465,14 +1413,17 @@ luck:getLuck(score)
 const maxStart =
 600 - ticketCount + 1;
 
+
 const firstNumber =
 Math.floor(
 Math.random() *
 (maxStart - 561 + 1)
 ) + 561;
 
+
 const row =
 Math.floor(Math.random() * 21) + 1;
+
 
 const numbers = [];
 
@@ -1483,14 +1434,6 @@ firstNumber + i
 );
 
 }
-
-
-/*
-見切れは悪い。
-*/
-
-const score =
-Math.floor(Math.random() * 21) + 10;
 
 
 return {
@@ -1506,9 +1449,9 @@ row:row,
 
 numbers:numbers,
 
-score:score,
+score:2,
 
-luck:getLuck(score)
+luck:getLuck(2)
 
 };
 
@@ -1564,6 +1507,7 @@ Math.floor(Math.random() * 30) + 1;
 const maxNumber =
 60 - ticketCount + 1;
 
+
 const firstNumber =
 Math.floor(
 Math.random() * maxNumber
@@ -1582,7 +1526,7 @@ firstNumber + i
 
 
 const score =
-Math.floor(Math.random() * 101);
+Math.floor(Math.random() * 4) + 2;
 
 
 return {
@@ -1598,35 +1542,6 @@ score:score,
 luck:getLuck(score)
 
 };
-
-}
-
-
-/* =========================
-   星
-========================= */
-
-function getStars(score){
-
-if(score >= 80){
-
-return "★★★★★";
-
-}
-
-if(score >= 65){
-
-return "★★★★☆";
-
-}
-
-if(score >= 40){
-
-return "★★★☆☆";
-
-}
-
-return "★★☆☆☆";
 
 }
 
@@ -1693,6 +1608,7 @@ if(win){
 const seat =
 createSeat();
 
+
 const numbers =
 seat.numbers.join("・");
 
@@ -1758,7 +1674,7 @@ getStars(seat.score) +
 "<div class='score'>" +
 "席運 " +
 seat.score +
-" / 100" +
+" / 5" +
 "</div>" +
 
 "<button id='retryButton' class='retry-button'>" +

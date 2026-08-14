@@ -474,22 +474,22 @@ LIVE TICKET LOTTERY
 
 <button class="lottery-option" data-lottery="fast">
 <strong>FC最速一次抽選</strong>
-<small>最速先行。かなり当たりやすい設定。</small>
+<small>アリーナ・1階・外野を中心とした最速先行。</small>
 </button>
 
 <button class="lottery-option" data-lottery="fc">
 <strong>FC・先行抽選</strong>
-<small>FC・先行受付を想定した抽選。</small>
+<small>スタンド後方・バルコニー・2階・外野なども対象。</small>
 </button>
 
 <button class="lottery-option" data-lottery="general">
 <strong>一般抽選</strong>
-<small>一般受付を想定した抽選。</small>
+<small>会場内の幅広い座席からランダムに決定。</small>
 </button>
 
 <button class="lottery-option" data-lottery="release">
 <strong>見切れ・機材開放席</strong>
-<small>かなり当たりにくい激レア抽選。</small>
+<small>見切れ席を中心とした激レア抽選。</small>
 </button>
 
 </div>
@@ -508,8 +508,8 @@ LIVE TICKET LOTTERY
 
 <br><br>
 
-席種を指定せず、会場内の座席から
-ランダムに座席が決定されます。
+抽選方式によって、
+対象となる座席エリアが変わります。
 
 <br><br>
 
@@ -878,21 +878,15 @@ return "";
 function getLuck(score){
 
 if(score === 5){
-
 return "🌟 超神席！！";
-
 }
 
 if(score === 4){
-
 return "🔥 神席クラス！";
-
 }
 
 if(score === 3){
-
 return "✨ かなり良い席！";
-
 }
 
 return "😢 ちょっと遠め…";
@@ -907,21 +901,15 @@ return "😢 ちょっと遠め…";
 function getStars(score){
 
 if(score === 5){
-
 return "★★★★★";
-
 }
 
 if(score === 4){
-
 return "★★★★☆";
-
 }
 
 if(score === 3){
-
 return "★★★☆☆";
-
 }
 
 return "★★☆☆☆";
@@ -930,15 +918,13 @@ return "★★☆☆☆";
 
 
 /* =========================
-   東京ドーム2階
+   東京ドーム2階列数
 ========================= */
 
 function getTokyoDomeSecondFloorMaxRow(number){
 
 if(number <= 100){
-
 return 30;
-
 }
 
 if(number <= 340){
@@ -971,47 +957,185 @@ return 1;
 
 
 /* =========================
-   座席作成
+   東京ドーム
+   座席抽選
 ========================= */
 
-function createSeat(){
+function createTokyoDomeSeat(){
 
 
-/* =================================================
-   東京ドーム
-================================================= */
+/*
+========================================
+FC最速一次抽選
+========================================
 
-if(selectedVenue && selectedVenue.name === "東京ドーム"){
+アリーナ
+1階
+外野
+
+この3種類だけ。
+*/
+
+if(selectedLottery === "fast"){
+
+const typeRandom =
+Math.random();
+
+
+/* アリーナ 40% */
+
+if(typeRandom < 0.40){
+
+return createTokyoDomeArena();
+
+}
+
+
+/* 1階 40% */
+
+if(typeRandom < 0.80){
+
+return createTokyoDomeFirstFloor();
+
+}
+
+
+/* 外野 20% */
+
+return createTokyoDomeOutfield(false);
+
+}
+
+
+/*
+========================================
+FC・先行抽選
+========================================
+
+アリーナ
+1階
+2階
+バルコニー
+外野
+*/
+
+if(selectedLottery === "fc"){
+
+const r =
+Math.random();
+
+
+if(r < 0.25){
+
+return createTokyoDomeArena();
+
+}
+
+if(r < 0.55){
+
+return createTokyoDomeFirstFloor();
+
+}
+
+if(r < 0.72){
+
+return createTokyoDomeSecondFloor();
+
+}
+
+if(r < 0.82){
+
+return createTokyoDomeBalcony();
+
+}
+
+return createTokyoDomeOutfield(false);
+
+}
+
+
+/*
+========================================
+一般抽選
+========================================
+
+さらに幅広く出現。
+*/
+
+if(selectedLottery === "general"){
+
+const r =
+Math.random();
+
+
+if(r < 0.12){
+
+return createTokyoDomeArena();
+
+}
+
+if(r < 0.40){
+
+return createTokyoDomeFirstFloor();
+
+}
+
+if(r < 0.68){
+
+return createTokyoDomeSecondFloor();
+
+}
+
+if(r < 0.82){
+
+return createTokyoDomeBalcony();
+
+}
+
+return createTokyoDomeOutfield(false);
+
+}
+
+
+/*
+========================================
+見切れ・機材開放席
+========================================
+*/
+
+return createTokyoDomeOutfield(true);
+
+}
 
 
 /* =========================
    アリーナ
 ========================= */
 
-if(Math.random() < 0.42){
+function createTokyoDomeArena(){
 
-const random =
+const r =
 Math.random();
 
 let block;
 
-if(random < 0.12){
+if(r < 0.12){
 
 block = "A";
 
-}else if(random < 0.32){
+}else if(r < 0.32){
 
 block = "B";
 
-}else if(random < 0.53){
+}else if(r < 0.53){
 
 block = "C";
 
-}else if(random < 0.73){
+}else if(r < 0.73){
 
 block = "D";
 
-}else if(random < 0.88){
+}else if(r < 0.88){
 
 block = "E";
 
@@ -1036,7 +1160,8 @@ F:12
 
 const blockNumber =
 Math.floor(
-Math.random() * blockCounts[block]
+Math.random() *
+blockCounts[block]
 ) + 1;
 
 
@@ -1053,20 +1178,14 @@ Math.random() *
 
 const numbers = [];
 
-for(let i = 0; i < ticketCount; i++){
+for(let i=0;i<ticketCount;i++){
 
 numbers.push(
-firstNumber + i
+firstNumber+i
 );
 
 }
 
-
-/*
-Aだけ★★★★★
-B～Dは★★★★☆
-E～Fは★★★☆☆
-*/
 
 let score;
 
@@ -1111,10 +1230,10 @@ luck:getLuck(score)
 
 
 /* =========================
-   1階スタンド
+   1階
 ========================= */
 
-if(Math.random() < 0.38){
+function createTokyoDomeFirstFloor(){
 
 const side =
 Math.random() < 0.5
@@ -1128,7 +1247,8 @@ const maxStart =
 
 const firstNumber =
 Math.floor(
-Math.random() * maxStart
+Math.random() *
+maxStart
 ) + 1;
 
 
@@ -1176,20 +1296,14 @@ Math.floor(Math.random() * 45) + 1;
 
 const numbers = [];
 
-for(let i = 0; i < ticketCount; i++){
+for(let i=0;i<ticketCount;i++){
 
 numbers.push(
-firstNumber + i
+firstNumber+i
 );
 
 }
 
-
-/*
-1～5列 → ★★★★☆
-6～30列 → ★★★☆☆
-31～45列 → ★★☆☆☆
-*/
 
 let score;
 
@@ -1231,10 +1345,10 @@ luck:getLuck(score)
 
 
 /* =========================
-   2階スタンド
+   2階
 ========================= */
 
-if(Math.random() < 0.93){
+function createTokyoDomeSecondFloor(){
 
 const side =
 Math.random() < 0.5
@@ -1254,7 +1368,8 @@ const maxStart =
 
 const firstNumber =
 Math.floor(
-Math.random() * maxStart
+Math.random() *
+maxStart
 ) + 1;
 
 
@@ -1264,25 +1379,21 @@ getTokyoDomeSecondFloorMaxRow(firstNumber);
 
 const row =
 Math.floor(
-Math.random() * maxRow
+Math.random() *
+maxRow
 ) + 1;
 
 
 const numbers = [];
 
-for(let i = 0; i < ticketCount; i++){
+for(let i=0;i<ticketCount;i++){
 
 numbers.push(
-firstNumber + i
+firstNumber+i
 );
 
 }
 
-
-/*
-1～3列 → ★★★☆☆
-4列以降 → ★★☆☆☆
-*/
 
 let score;
 
@@ -1320,8 +1431,69 @@ luck:getLuck(score)
 
 
 /* =========================
+   バルコニー
+========================= */
+
+function createTokyoDomeBalcony(){
+
+const side =
+Math.random() < 0.5
+? "1塁側"
+: "3塁側";
+
+
+/*
+バルコニーは今回、
+架空の範囲として
+1～20列・1～200番を使用。
+*/
+
+const row =
+Math.floor(Math.random() * 20) + 1;
+
+
+const firstNumber =
+Math.floor(
+Math.random() *
+(200 - ticketCount + 1)
+) + 1;
+
+
+const numbers = [];
+
+for(let i=0;i<ticketCount;i++){
+
+numbers.push(
+firstNumber+i
+);
+
+}
+
+
+return {
+
+block:
+"バルコニー " +
+side,
+
+row:row,
+
+numbers:numbers,
+
+score:3,
+
+luck:getLuck(3)
+
+};
+
+}
+
+
+/* =========================
    外野
 ========================= */
+
+function createTokyoDomeOutfield(isLimited){
 
 const side =
 Math.random() < 0.5
@@ -1336,19 +1508,65 @@ side === "ライト"
 
 
 /*
-通常外野
+見切れ席
+561～600番
 */
 
-if(Math.random() < 0.88){
-
-const maxStart =
-560 - ticketCount + 1;
-
+if(isLimited){
 
 const firstNumber =
 Math.floor(
 Math.random() *
-(maxStart - 501 + 1)
+(600 - 561 - ticketCount + 2)
+) + 561;
+
+
+const row =
+Math.floor(Math.random() * 21) + 1;
+
+
+const numbers = [];
+
+for(let i=0;i<ticketCount;i++){
+
+numbers.push(
+firstNumber+i
+);
+
+}
+
+
+return {
+
+block:
+"見切れ " +
+side +
+"外野・" +
+gate +
+"ゲート",
+
+row:row,
+
+numbers:numbers,
+
+score:2,
+
+luck:getLuck(2)
+
+};
+
+}
+
+
+/*
+通常外野
+501～560番
+*/
+
+const firstNumber =
+Math.floor(
+Math.random() *
+(560 - 501 - ticketCount + 2)
 ) + 501;
 
 
@@ -1358,19 +1576,14 @@ Math.floor(Math.random() * 21) + 1;
 
 const numbers = [];
 
-for(let i = 0; i < ticketCount; i++){
+for(let i=0;i<ticketCount;i++){
 
 numbers.push(
-firstNumber + i
+firstNumber+i
 );
 
 }
 
-
-/*
-1～3列 → ★★★☆☆
-4～21列 → ★★☆☆☆
-*/
 
 let score;
 
@@ -1407,96 +1620,32 @@ luck:getLuck(score)
 
 
 /* =========================
-   見切れ
+   他の会場
 ========================= */
 
-const maxStart =
-600 - ticketCount + 1;
+function createOtherVenueSeat(){
 
+let areas = [
 
-const firstNumber =
-Math.floor(
-Math.random() *
-(maxStart - 561 + 1)
-) + 561;
-
-
-const row =
-Math.floor(Math.random() * 21) + 1;
-
-
-const numbers = [];
-
-for(let i = 0; i < ticketCount; i++){
-
-numbers.push(
-firstNumber + i
-);
-
-}
-
-
-return {
-
-block:
-"見切れ " +
-side +
-"・" +
-gate +
-"ゲート",
-
-row:row,
-
-numbers:numbers,
-
-score:2,
-
-luck:getLuck(2)
-
-};
-
-}
-
-
-/* =================================================
-   東京ドーム以外
-================================================= */
-
-let areas;
-
-if(venueType === "dome"){
-
-areas = [
 "アリーナ Aブロック",
 "アリーナ Bブロック",
 "アリーナ Cブロック",
 "アリーナ Dブロック",
 "アリーナ Eブロック",
 "アリーナ Fブロック",
-"1塁側スタンド",
-"3塁側スタンド",
-"外野スタンド"
-];
-
-}else{
-
-areas = [
-"アリーナ Aブロック",
-"アリーナ Bブロック",
-"アリーナ Cブロック",
-"アリーナ Dブロック",
-"アリーナ Eブロック",
-"スタンド",
 "1階スタンド",
-"2階スタンド"
-];
+"2階スタンド",
+"外野スタンド"
 
-}
+];
 
 
 const block =
 areas[
-Math.floor(Math.random() * areas.length)
+Math.floor(
+Math.random() *
+areas.length
+)
 ];
 
 
@@ -1504,28 +1653,25 @@ const row =
 Math.floor(Math.random() * 30) + 1;
 
 
-const maxNumber =
-60 - ticketCount + 1;
-
-
 const firstNumber =
 Math.floor(
-Math.random() * maxNumber
+Math.random() *
+(60 - ticketCount + 1)
 ) + 1;
 
 
 const numbers = [];
 
-for(let i = 0; i < ticketCount; i++){
+for(let i=0;i<ticketCount;i++){
 
 numbers.push(
-firstNumber + i
+firstNumber+i
 );
 
 }
 
 
-const score =
+let score =
 Math.floor(Math.random() * 4) + 2;
 
 
@@ -1542,6 +1688,26 @@ score:score,
 luck:getLuck(score)
 
 };
+
+}
+
+
+/* =========================
+   座席作成
+========================= */
+
+function createSeat(){
+
+if(
+selectedVenue &&
+selectedVenue.name === "東京ドーム"
+){
+
+return createTokyoDomeSeat();
+
+}
+
+return createOtherVenueSeat();
 
 }
 
@@ -1565,7 +1731,9 @@ document.getElementById("lotteryButton");
 button.disabled = true;
 
 
-document.querySelectorAll(".lottery-option").forEach(function(b){
+document
+.querySelectorAll(".lottery-option")
+.forEach(function(b){
 
 b.disabled = true;
 
@@ -1635,7 +1803,7 @@ selectedVenue.name +
 getLotteryName() +
 "</strong><br>" +
 
-"全席対象・座席ランダム<br>" +
+"座席：抽選方式に応じてランダム<br>" +
 
 "申込枚数：<strong>" +
 ticketCount +
@@ -1706,8 +1874,6 @@ selectedVenue.name +
 "抽選：<strong>" +
 getLotteryName() +
 "</strong><br>" +
-
-"全席対象・座席ランダム<br>" +
 
 "申込枚数：<strong>" +
 ticketCount +

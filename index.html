@@ -1,497 +1,569 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LIVE TICKET SIMULATOR</title>
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>チケドロ！｜ライブチケット抽選シミュレーター</title>
+
+<meta name="description"
+content="コンサートチケットの抽選を楽しくシミュレーション！実際の会場を選び、そして応募方法を選んで、当落結果と座席を本当のチケットの抽選のように楽しめます。">
+
+<meta name="theme-color" content="#111111">
+
+<meta property="og:type" content="website">
+
+<meta property="og:title"
+content="チケドロ！｜ライブチケット抽選シミュレーター">
+
+<meta property="og:description"
+content="ライブチケットの抽選を楽しくシミュレーション！当落結果と座席をランダムに決定できます。">
+
+<meta name="twitter:card" content="summary">
+
+<meta name="twitter:title"
+content="チケドロ！｜ライブチケット抽選シミュレーター">
+
+<meta name="twitter:description"
+content="ライブチケットの抽選を楽しくシミュレーション！">
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebApplication",
+  "name":"チケドロ！",
+  "description":"ライブチケットの抽選結果と座席をシミュレーションできる非公式・架空のWebサービス。",
+  "applicationCategory":"EntertainmentApplication",
+  "operatingSystem":"Web Browser",
+  "inLanguage":"ja"
+}
+</script>
 
 <style>
+
 *{
-  box-sizing:border-box;
+box-sizing:border-box;
 }
 
 body{
-  margin:0;
-  background:#f3f4f6;
-  color:#151515;
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+margin:0;
+background:#f3f4f6;
+color:#151515;
+font-family:
+-apple-system,
+BlinkMacSystemFont,
+"Helvetica Neue",
+sans-serif;
 }
 
 button{
-  font-family:inherit;
-  cursor:pointer;
+font-family:inherit;
+cursor:pointer;
 }
 
 .app{
-  width:100%;
-  max-width:520px;
-  margin:auto;
-  min-height:100vh;
-  padding-bottom:60px;
+width:100%;
+max-width:520px;
+margin:auto;
+min-height:100vh;
+padding-bottom:60px;
 }
 
 .header{
-  height:58px;
-  display:flex;
-  align-items:center;
-  padding:0 20px;
-  background:#111;
-  color:white;
-  font-weight:900;
-  letter-spacing:.5px;
+height:58px;
+display:flex;
+align-items:center;
+padding:0 20px;
+background:#111;
+color:white;
+font-weight:900;
+letter-spacing:.5px;
 }
 
 .header span{
-  margin-left:7px;
-  font-size:10px;
-  opacity:.55;
+margin-left:7px;
+font-size:10px;
+opacity:.55;
 }
 
 .home{
-  min-height:calc(100vh - 58px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:30px 22px;
+min-height:calc(100vh - 58px);
+display:flex;
+align-items:center;
+justify-content:center;
+padding:30px 22px;
 }
 
 .home-inner{
-  width:100%;
-  text-align:center;
+width:100%;
+text-align:center;
 }
 
 .ticket-icon{
-  font-size:56px;
-  margin-bottom:18px;
+font-size:56px;
+margin-bottom:18px;
 }
 
 .home h1{
-  margin:0;
-  font-size:37px;
-  line-height:1.05;
-  letter-spacing:-1.5px;
+margin:0;
+font-size:43px;
+line-height:1.05;
+letter-spacing:-1.5px;
 }
 
 .home-subtitle{
-  margin-top:13px;
-  color:#777;
-  font-size:13px;
-  letter-spacing:2px;
-  font-weight:700;
+margin-top:13px;
+color:#777;
+font-size:11px;
+letter-spacing:2px;
+font-weight:700;
 }
 
 .home-description{
-  margin:27px auto 35px;
-  color:#777;
-  font-size:14px;
-  line-height:1.8;
+margin:27px auto 35px;
+color:#777;
+font-size:14px;
+line-height:1.8;
 }
 
 .start-button{
-  width:100%;
-  border:none;
-  border-radius:13px;
-  padding:19px;
-  background:#111;
-  color:white;
-  font-size:17px;
-  font-weight:900;
+width:100%;
+border:none;
+border-radius:13px;
+padding:19px;
+background:#111;
+color:white;
+font-size:17px;
+font-weight:900;
 }
 
 .small-note{
-  margin-top:18px;
-  color:#aaa;
-  font-size:10px;
-  line-height:1.6;
+margin-top:18px;
+color:#aaa;
+font-size:10px;
+line-height:1.6;
 }
 
 .screen{
-  display:none;
+display:none;
 }
 
 .hero{
-  background:white;
-  padding:28px 20px 24px;
-  border-bottom:1px solid #e5e5e5;
+background:white;
+padding:28px 20px 24px;
+border-bottom:1px solid #e5e5e5;
 }
 
 .step{
-  margin-bottom:8px;
-  color:#999;
-  font-size:10px;
-  letter-spacing:1.5px;
-  font-weight:900;
+margin-bottom:8px;
+color:#999;
+font-size:10px;
+letter-spacing:1.5px;
+font-weight:900;
 }
 
 .hero h2{
-  margin:0;
-  font-size:27px;
-  line-height:1.2;
+margin:0;
+font-size:27px;
+line-height:1.2;
 }
 
 .hero p{
-  margin:9px 0 0;
-  color:#777;
-  font-size:13px;
-  line-height:1.6;
+margin:9px 0 0;
+color:#777;
+font-size:13px;
+line-height:1.6;
 }
 
-/* 座席データ説明 */
-
 .seat-data-note{
-  margin-top:16px;
-  padding:11px 12px;
-  border-radius:9px;
-  background:#f7f7f7;
-  color:#888;
-  font-size:10px;
-  line-height:1.6;
+margin-top:16px;
+padding:11px 12px;
+border-radius:9px;
+background:#f7f7f7;
+color:#888;
+font-size:10px;
+line-height:1.6;
 }
 
 .seat-data-note strong{
-  color:#666;
-  font-size:10px;
+color:#666;
+font-size:10px;
 }
 
 .data-status{
-  margin-top:5px;
-  color:#999;
-  font-size:9px;
+margin-top:5px;
+color:#999;
+font-size:9px;
 }
 
 .type-list,
 .venue-list{
-  display:grid;
-  gap:12px;
-  padding:22px 18px;
+display:grid;
+gap:12px;
+padding:22px 18px;
 }
 
 .type-card,
 .venue{
-  width:100%;
-  padding:20px 18px;
-  border:2px solid #e4e4e4;
-  border-radius:15px;
-  background:white;
-  text-align:left;
+width:100%;
+padding:20px 18px;
+border:2px solid #e4e4e4;
+border-radius:15px;
+background:white;
+text-align:left;
 }
 
 .type-card strong,
 .venue strong{
-  display:block;
-  font-size:18px;
+display:block;
+font-size:18px;
 }
 
 .type-card small,
 .venue small{
-  display:block;
-  margin-top:6px;
-  color:#888;
-  font-size:12px;
+display:block;
+margin-top:6px;
+color:#888;
+font-size:12px;
 }
 
 .venue-status{
-  display:block;
-  margin-top:9px;
-  font-size:11px;
-  font-weight:800;
+display:block;
+margin-top:9px;
+font-size:11px;
+font-weight:800;
 }
 
 .status-ready{
-  color:#d40000;
+color:#d40000;
 }
 
 .status-preparing{
-  color:#777;
+color:#777;
 }
 
 .legend{
-  padding:0 18px 4px;
-  color:#888;
-  font-size:10px;
+padding:0 18px 4px;
+color:#888;
+font-size:10px;
 }
 
 .setting-area{
-  padding:21px 18px 0;
+padding:21px 18px 0;
 }
 
 .setting-title{
-  margin-bottom:12px;
-  font-size:16px;
-  font-weight:900;
+margin-bottom:12px;
+font-size:16px;
+font-weight:900;
 }
 
 .lottery-list{
-  display:grid;
-  gap:10px;
+display:grid;
+gap:10px;
 }
 
 .lottery-option{
-  width:100%;
-  padding:17px;
-  border:2px solid #e4e4e4;
-  border-radius:13px;
-  background:white;
-  text-align:left;
+width:100%;
+padding:17px;
+border:2px solid #e4e4e4;
+border-radius:13px;
+background:white;
+text-align:left;
 }
 
 .lottery-option strong{
-  display:block;
-  font-size:15px;
+display:block;
+font-size:15px;
 }
 
 .lottery-option small{
-  display:block;
-  margin-top:5px;
-  color:#888;
-  line-height:1.5;
+display:block;
+margin-top:5px;
+color:#888;
+line-height:1.5;
 }
 
 .lottery-option.selected{
-  border-color:#111;
-  background:#fafafa;
+border-color:#111;
+background:#fafafa;
 }
 
 .info-card{
-  padding:16px;
-  border-radius:13px;
-  background:white;
-  color:#555;
-  font-size:13px;
-  line-height:1.7;
+padding:16px;
+border-radius:13px;
+background:white;
+color:#555;
+font-size:13px;
+line-height:1.7;
 }
 
 .count-box{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:17px;
-  border-radius:13px;
-  background:white;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:17px;
+border-radius:13px;
+background:white;
 }
 
 .counter{
-  display:flex;
-  align-items:center;
-  gap:15px;
+display:flex;
+align-items:center;
+gap:15px;
 }
 
 .counter button{
-  width:38px;
-  height:38px;
-  border:1px solid #ddd;
-  border-radius:50%;
-  background:white;
-  font-size:21px;
+width:38px;
+height:38px;
+border:1px solid #ddd;
+border-radius:50%;
+background:white;
+font-size:21px;
 }
 
 .counter button:disabled{
-  opacity:.4;
+opacity:.4;
 }
 
 #ticketCount{
-  min-width:20px;
-  text-align:center;
-  font-size:20px;
-  font-weight:900;
+min-width:20px;
+text-align:center;
+font-size:20px;
+font-weight:900;
 }
 
 .main-button{
-  width:calc(100% - 36px);
-  margin:25px 18px 0;
-  padding:18px;
-  border:none;
-  border-radius:13px;
-  background:#111;
-  color:white;
-  font-size:17px;
-  font-weight:900;
+width:calc(100% - 36px);
+margin:25px 18px 0;
+padding:18px;
+border:none;
+border-radius:13px;
+background:#111;
+color:white;
+font-size:17px;
+font-weight:900;
 }
 
 .main-button:disabled{
-  background:#ccc;
+background:#ccc;
 }
 
 #loading{
-  padding:28px 18px 0;
-  text-align:center;
-  font-size:17px;
-  font-weight:900;
+padding:28px 18px 0;
+text-align:center;
+font-size:17px;
+font-weight:900;
 }
 
 #result{
-  display:none;
-  padding:25px 18px 0;
+display:none;
+padding:25px 18px 0;
 }
 
 .result-card{
-  padding:28px 20px;
-  border-radius:20px;
-  background:white;
-  text-align:center;
-  box-shadow:0 10px 35px rgba(0,0,0,.08);
+padding:28px 20px;
+border-radius:20px;
+background:white;
+text-align:center;
+box-shadow:0 10px 35px rgba(0,0,0,.08);
 }
 
 .result-label{
-  color:#999;
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:2px;
+color:#999;
+font-size:10px;
+font-weight:900;
+letter-spacing:2px;
 }
 
 .result-title{
-  margin:10px 0 20px;
-  font-size:35px;
-  font-weight:950;
+margin:10px 0 20px;
+font-size:35px;
+font-weight:950;
 }
 
 .result-info{
-  padding:18px 0;
-  border-top:1px solid #eee;
-  border-bottom:1px solid #eee;
-  color:#555;
-  font-size:13px;
-  line-height:2;
+padding:18px 0;
+border-top:1px solid #eee;
+border-bottom:1px solid #eee;
+color:#555;
+font-size:13px;
+line-height:2;
 }
 
 .seat-label{
-  margin-top:21px;
-  color:#999;
-  font-size:10px;
-  letter-spacing:1.5px;
-  font-weight:900;
+margin-top:21px;
+color:#999;
+font-size:10px;
+letter-spacing:1.5px;
+font-weight:900;
 }
 
 .seat-main{
-  margin-top:7px;
-  font-size:25px;
-  line-height:1.5;
-  font-weight:950;
+margin-top:7px;
+font-size:25px;
+line-height:1.5;
+font-weight:950;
 }
 
 .seat-sub{
-  margin-top:5px;
-  color:#888;
-  font-size:12px;
+margin-top:5px;
+color:#888;
+font-size:12px;
 }
 
 .luck{
-  margin-top:20px;
-  font-size:20px;
-  font-weight:900;
+margin-top:20px;
+font-size:20px;
+font-weight:900;
 }
 
 .stars{
-  margin-top:7px;
-  font-size:20px;
-  letter-spacing:2px;
+margin-top:7px;
+font-size:20px;
+letter-spacing:2px;
 }
 
 .score{
-  margin-top:6px;
-  color:#888;
-  font-size:12px;
+margin-top:6px;
+color:#888;
+font-size:12px;
 }
 
 .result-buttons{
-  display:grid;
-  gap:10px;
-  margin-top:23px;
+display:grid;
+gap:10px;
+margin-top:23px;
 }
 
 .share-button{
-  padding:15px;
-  border:none;
-  border-radius:11px;
-  background:#111;
-  color:white;
-  font-weight:900;
-  font-size:14px;
+padding:15px;
+border:none;
+border-radius:11px;
+background:#111;
+color:white;
+font-weight:900;
+font-size:14px;
 }
 
-.retry-button{
-  padding:14px 24px;
-  border:1px solid #ddd;
-  border-radius:11px;
-  background:white;
-  font-weight:900;
-}
-
+.retry-button,
 .home-button{
-  padding:14px 24px;
-  border:1px solid #ddd;
-  border-radius:11px;
-  background:white;
-  font-weight:900;
+padding:14px 24px;
+border:1px solid #ddd;
+border-radius:11px;
+background:white;
+font-weight:900;
 }
 
-.disclaimer{
-  padding:25px 20px;
-  text-align:center;
-  color:#aaa;
-  font-size:10px;
-  line-height:1.6;
+.site-info{
+margin:35px 18px 0;
+padding:20px;
+border-radius:15px;
+background:white;
 }
 
-/* 共有用・画面外 */
+.site-info h3{
+margin:0 0 10px;
+font-size:15px;
+}
+
+.site-info p{
+margin:0;
+color:#777;
+font-size:12px;
+line-height:1.8;
+}
+
+.site-info + .site-info{
+margin-top:12px;
+}
+
+.footer{
+padding:30px 20px 0;
+text-align:center;
+color:#aaa;
+font-size:10px;
+line-height:1.7;
+}
 
 #shareCanvas{
-  display:none;
+display:none;
 }
+
 </style>
+
 </head>
 
 <body>
 
 <div class="app">
 
+
+<!-- HEADER -->
+
 <div class="header">
-LIVE TICKET
-<span>SIMULATOR</span>
+
+チケドロ！
+
+<span>
+LIVE TICKET SIMULATION
+</span>
+
 </div>
 
 
-<!-- =========================
-     HOME
-========================= -->
+<!-- HOME -->
 
 <div id="home" class="home">
 
 <div class="home-inner">
 
-<div class="ticket-icon">🎫</div>
+<div class="ticket-icon">
+🎫
+</div>
 
 <h1>
-LIVE TICKET
-<br>
-SIMULATOR
+チケドロ！
 </h1>
 
 <div class="home-subtitle">
-LIVE TICKET LOTTERY
+LIVE TICKET SIMULATION
 </div>
 
 <div class="home-description">
+
 好きなライブを思い浮かべながら、<br>
-チケット抽選をシミュレーションしよう。<br><br>
-当選したら、あなたの座席もランダムで決定！
+
+ライブチケットの抽選をシミュレーション。<br><br>
+
+会場と応募方法を選ぶと、<br>
+当落結果と座席をランダムに決定します。
+
 </div>
 
-<button id="startButton" class="start-button">
+<button
+id="startButton"
+class="start-button">
+
 シミュレーションを始める
+
 </button>
 
 <div class="small-note">
+
 非公式・架空のチケット抽選シミュレーター
+
 </div>
 
 </div>
+
 </div>
 
 
-<!-- =========================
-     TYPE
-========================= -->
+<!-- TYPE -->
 
 <div id="typeScreen" class="screen">
 
@@ -513,7 +585,9 @@ STEP 01
 
 <div class="type-list">
 
-<button class="type-card" data-type="dome">
+<button
+class="type-card"
+data-type="dome">
 
 <strong>
 🏟️ DOME / STADIUM
@@ -526,7 +600,9 @@ STEP 01
 </button>
 
 
-<button class="type-card" data-type="arena">
+<button
+class="type-card"
+data-type="arena">
 
 <strong>
 🎤 ARENA / HALL
@@ -543,9 +619,7 @@ STEP 01
 </div>
 
 
-<!-- =========================
-     VENUE
-========================= -->
+<!-- VENUE -->
 
 <div id="venueScreen" class="screen">
 
@@ -566,38 +640,43 @@ STEP 02
 <div class="seat-data-note">
 
 <strong>
-座席データについて
+座席データとは？
 </strong>
 
 <br>
 
 実際の会場にできるだけ近づけた
-座席データを使用しています。
+座席構成・ゲート・列・番号などを
+シミュレーション用データとして設定しています。
 
 <div class="data-status">
+
 ※会場によって対応状況が異なります。
-</div>
 
 </div>
 
 </div>
 
+</div>
 
 <div class="legend">
-🔴【座席データ対応】　⚪️【座席データ準備中】
-</div>
 
-
-<div id="venueList" class="venue-list"></div>
+🔴【座席データ対応】　
+⚪️【座席データ準備中】
 
 </div>
 
+<div id="venueList"
+class="venue-list">
+</div>
 
-<!-- =========================
-     SETTING
-========================= -->
+</div>
 
-<div id="settingScreen" class="screen">
+
+<!-- SETTING -->
+
+<div id="settingScreen"
+class="screen">
 
 <div class="hero">
 
@@ -609,7 +688,8 @@ STEP 03
 チケットを設定
 </h2>
 
-<p id="selectedVenueText"></p>
+<p id="selectedVenueText">
+</p>
 
 </div>
 
@@ -623,20 +703,25 @@ STEP 03
 <div class="lottery-list">
 
 
-<button class="lottery-option" data-lottery="fast">
+<button
+class="lottery-option"
+data-lottery="fast">
 
 <strong>
 FC最速一次抽選
 </strong>
 
 <small>
-アリーナ・1階・外野を中心とした最速先行。
+アリーナ・1階・外野を中心とした
+最速先行。
 </small>
 
 </button>
 
 
-<button class="lottery-option" data-lottery="fc">
+<button
+class="lottery-option"
+data-lottery="fc">
 
 <strong>
 FC・先行抽選
@@ -650,20 +735,25 @@ FC・先行抽選
 </button>
 
 
-<button class="lottery-option" data-lottery="general">
+<button
+class="lottery-option"
+data-lottery="general">
 
 <strong>
 一般抽選
 </strong>
 
 <small>
-2階席を中心とした幅広い座席からランダムに決定。
+2階席を中心とした幅広い座席から
+ランダムに決定。
 </small>
 
 </button>
 
 
-<button class="lottery-option" data-lottery="release">
+<button
+class="lottery-option"
+data-lottery="release">
 
 <strong>
 見切れ・機材開放席
@@ -676,6 +766,7 @@ FC・先行抽選
 </button>
 
 </div>
+
 </div>
 
 
@@ -751,40 +842,122 @@ disabled>
 </div>
 
 
-<div id="loading"></div>
-
-<div id="result"></div>
-
-
-<div class="disclaimer">
-
-※このサイトはライブチケット抽選を楽しむための
-非公式・架空のシミュレーターです。<br>
-
-実際の抽選結果・当選確率・座席とは関係ありません。
-
+<div id="loading">
 </div>
 
+<div id="result">
 </div>
 
 
-<!-- 共有画像作成用 -->
+<!-- SITE INFORMATION -->
 
-<canvas id="shareCanvas" width="1080" height="1350"></canvas>
+<div class="site-info">
+
+<h3>
+🎫 チケドロ！とは
+</h3>
+
+<p>
+
+チケドロ！は、ライブチケットの抽選を
+楽しむための非公式・架空の
+シミュレーターです。
+
+会場や応募方法を選択すると、
+抽選結果と座席をランダムに決定します。
+
+実際のチケット販売・抽選・座席配席とは
+関係ありません。
+
+</p>
+
+</div>
+
+
+<div class="site-info">
+
+<h3>
+💺 座席データについて
+</h3>
+
+<p>
+
+対応している会場では、
+実際の会場の座席構成を参考に、
+ゲート・階・列・番号・ブロックなどを
+できるだけ近づけたデータを使用しています。
+
+ただし、すべてシミュレーション用の
+架空データであり、実際の座席を保証するものではありません。
+
+</p>
+
+</div>
+
+
+<div class="site-info">
+
+<h3>
+⚠️ ご利用について
+</h3>
+
+<p>
+
+このサイトは娯楽目的の
+非公式シミュレーターです。
+
+実際の当選確率、チケット販売、
+座席位置、配席方法などを
+正確に再現するものではありません。
+
+各アーティスト、会場、チケット販売会社等とは
+関係ありません。
+
+</p>
+
+</div>
+
+
+<div class="footer">
+
+チケドロ！<br>
+
+LIVE TICKET SIMULATION<br><br>
+
+非公式・架空のチケット抽選シミュレーター
+
+</div>
+
+
+</div>
+
+
+<canvas
+id="shareCanvas"
+width="1080"
+height="1350">
+</canvas>
 
 
 <script>
 
+/* =========================
+   BASIC DATA
+========================= */
+
 let venueType = "";
+
 let selectedVenue = null;
+
 let selectedLottery = "";
+
 let ticketCount = 2;
 
 let lastResult = null;
 
 
 /* =========================
-   会場データ
+   VENUE DATA
 ========================= */
 
 const venueData = {
@@ -873,28 +1046,33 @@ location:"千葉県船橋市",
 ready:false
 }
 
-]
-
-};
+]};
 
 
 /* =========================
-   画面切り替え
+   SCREEN
 ========================= */
 
 function showScreen(id){
 
-document.querySelectorAll(".screen").forEach(function(screen){
+document
+.querySelectorAll(".screen")
+.forEach(function(screen){
 
 screen.style.display = "none";
 
 });
 
-document.getElementById(id).style.display = "block";
+document
+.getElementById(id)
+.style.display = "block";
 
 window.scrollTo({
+
 top:0,
+
 behavior:"smooth"
+
 });
 
 }
@@ -906,9 +1084,13 @@ behavior:"smooth"
 
 document
 .getElementById("startButton")
-.addEventListener("click",function(){
+.addEventListener(
+"click",
+function(){
 
-document.getElementById("home").style.display = "none";
+document
+.getElementById("home")
+.style.display = "none";
 
 showScreen("typeScreen");
 
@@ -916,78 +1098,107 @@ showScreen("typeScreen");
 
 
 /* =========================
-   会場タイプ
+   VENUE SELECT
 ========================= */
 
 document
 .querySelectorAll(".type-card")
 .forEach(function(button){
 
-button.addEventListener("click",function(){
+button.addEventListener(
+"click",
+function(){
 
-venueType = button.dataset.type;
+venueType =
+button.dataset.type;
 
 const list =
 document.getElementById("venueList");
 
 list.innerHTML = "";
 
-venueData[venueType].forEach(function(venue){
+
+venueData[venueType]
+.forEach(function(venue){
 
 const b =
 document.createElement("button");
 
 b.className = "venue";
 
+
 let statusHTML;
+
 
 if(venue.ready){
 
 statusHTML =
+
 "<span class='venue-status status-ready'>" +
+
 "🔴【座席データ対応】" +
+
 "</span>";
 
 }else{
 
 statusHTML =
+
 "<span class='venue-status status-preparing'>" +
+
 "⚪️【座席データ準備中】" +
+
 "</span>";
 
 }
 
+
 b.innerHTML =
 
 "<strong>" +
+
 venue.name +
+
 "</strong>" +
 
 "<small>" +
+
 venue.location +
+
 "</small>" +
 
 statusHTML;
 
 
-b.addEventListener("click",function(){
+b.addEventListener(
+"click",
+function(){
 
-selectedVenue = venue;
+selectedVenue =
+venue;
 
 document
-.getElementById("selectedVenueText")
+.getElementById(
+"selectedVenueText"
+)
 .textContent =
 venue.name;
 
-showScreen("settingScreen");
+showScreen(
+"settingScreen"
+);
 
 });
+
 
 list.appendChild(b);
 
 });
 
-showScreen("venueScreen");
+
+showScreen(
+"venueScreen"
+);
 
 });
 
@@ -995,24 +1206,30 @@ showScreen("venueScreen");
 
 
 /* =========================
-   抽選方式
+   LOTTERY SELECT
 ========================= */
 
 document
 .querySelectorAll(".lottery-option")
 .forEach(function(button){
 
-button.addEventListener("click",function(){
+button.addEventListener(
+"click",
+function(){
 
 document
 .querySelectorAll(".lottery-option")
 .forEach(function(b){
 
-b.classList.remove("selected");
+b.classList.remove(
+"selected"
+);
 
 });
 
-button.classList.add("selected");
+button.classList.add(
+"selected"
+);
 
 selectedLottery =
 button.dataset.lottery;
@@ -1025,12 +1242,14 @@ checkReady();
 
 
 /* =========================
-   枚数
+   TICKET COUNT
 ========================= */
 
 document
 .getElementById("minus")
-.addEventListener("click",function(){
+.addEventListener(
+"click",
+function(){
 
 if(ticketCount > 1){
 
@@ -1048,7 +1267,9 @@ ticketCount;
 
 document
 .getElementById("plus")
-.addEventListener("click",function(){
+.addEventListener(
+"click",
+function(){
 
 if(ticketCount < 4){
 
@@ -1065,7 +1286,7 @@ ticketCount;
 
 
 /* =========================
-   準備確認
+   READY
 ========================= */
 
 function checkReady(){
@@ -1080,7 +1301,7 @@ document
 
 
 /* =========================
-   当選確率
+   WIN RATE
 ========================= */
 
 function getWinRate(){
@@ -1107,7 +1328,7 @@ return 0.5;
 
 
 /* =========================
-   抽選方式名
+   LOTTERY NAME
 ========================= */
 
 function getLotteryName(){
@@ -1134,7 +1355,7 @@ return "";
 
 
 /* =========================
-   席運
+   LUCK
 ========================= */
 
 function getLuck(score){
@@ -1156,10 +1377,6 @@ return "😢 ちょっと遠め…";
 }
 
 
-/* =========================
-   星
-========================= */
-
 function getStars(score){
 
 if(score === 5){
@@ -1180,25 +1397,28 @@ return "★★☆☆☆";
 
 
 /* =========================
-   東京ドーム
-   2階最大列
+   TOKYO DOME
 ========================= */
 
 function getTokyoDomeSecondFloorMaxRow(number){
 
 if(number <= 100){
+
 return 30;
+
 }
 
 if(number <= 340){
 
 const progress =
 (number - 101) /
-(340 - 101);
+239;
 
 return Math.max(
 21,
-Math.round(30 - 9 * progress)
+Math.round(
+30 - 9 * progress
+)
 );
 
 }
@@ -1207,11 +1427,13 @@ if(number <= 461){
 
 const progress =
 (number - 341) /
-(461 - 341);
+120;
 
 return Math.max(
 5,
-Math.round(21 - 16 * progress)
+Math.round(
+21 - 16 * progress
+)
 );
 
 }
@@ -1222,125 +1444,7 @@ return 1;
 
 
 /* =========================
-   東京ドーム座席
-========================= */
-
-function createTokyoDomeSeat(){
-
-
-/* FC最速 */
-
-if(selectedLottery === "fast"){
-
-const r = Math.random();
-
-if(r < 0.50){
-return createTokyoDomeArena();
-}
-
-if(r < 0.85){
-return createTokyoDomeFirstFloor();
-}
-
-return createTokyoDomeOutfield(false);
-
-}
-
-
-/* FC先行 */
-
-if(selectedLottery === "fc"){
-
-const r = Math.random();
-
-if(r < 0.02){
-
-let seat =
-createTokyoDomeArena();
-
-while(
-!seat.block.includes(" Dブロック") &&
-!seat.block.includes(" Eブロック") &&
-!seat.block.includes(" Fブロック")
-){
-
-seat =
-createTokyoDomeArena();
-
-}
-
-return seat;
-
-}
-
-if(r < 0.40){
-return createTokyoDomeFirstFloor();
-}
-
-if(r < 0.65){
-return createTokyoDomeSecondFloor();
-}
-
-if(r < 0.80){
-return createTokyoDomeBalcony();
-}
-
-return createTokyoDomeOutfield(false);
-
-}
-
-
-/* 一般 */
-
-if(selectedLottery === "general"){
-
-const r = Math.random();
-
-if(r < 0.005){
-
-let seat =
-createTokyoDomeArena();
-
-while(
-!seat.block.includes(" Eブロック") &&
-!seat.block.includes(" Fブロック")
-){
-
-seat =
-createTokyoDomeArena();
-
-}
-
-return seat;
-
-}
-
-if(r < 0.25){
-return createTokyoDomeFirstFloor();
-}
-
-if(r < 0.75){
-return createTokyoDomeSecondFloor();
-}
-
-if(r < 0.85){
-return createTokyoDomeBalcony();
-}
-
-return createTokyoDomeOutfield(false);
-
-}
-
-
-/* 見切れ */
-
-return createTokyoDomeOutfield(true);
-
-}
-
-
-/* =========================
-   東京ドーム アリーナ
+   TOKYO DOME ARENA
 ========================= */
 
 function createTokyoDomeArena(){
@@ -1348,6 +1452,7 @@ function createTokyoDomeArena(){
 const r = Math.random();
 
 let block;
+
 
 if(r < 0.12){
 
@@ -1379,10 +1484,15 @@ block = "F";
 const blockCounts = {
 
 A:16,
+
 B:17,
+
 C:17,
+
 D:15,
+
 E:13,
+
 F:12
 
 };
@@ -1396,7 +1506,9 @@ blockCounts[block]
 
 
 const row =
-Math.floor(Math.random() * 15) + 1;
+Math.floor(
+Math.random() * 15
+) + 1;
 
 
 const firstNumber =
@@ -1408,16 +1520,22 @@ Math.random() *
 
 const numbers = [];
 
-for(let i=0;i<ticketCount;i++){
+
+for(
+let i=0;
+i<ticketCount;
+i++
+){
 
 numbers.push(
-firstNumber+i
+firstNumber + i
 );
 
 }
 
 
 let score;
+
 
 if(block === "A"){
 
@@ -1460,7 +1578,7 @@ luck:getLuck(score)
 
 
 /* =========================
-   東京ドーム 1階
+   1ST FLOOR
 ========================= */
 
 function createTokyoDomeFirstFloor(){
@@ -1484,36 +1602,56 @@ maxStart
 
 let gate;
 
+
 if(side === "1塁側"){
 
 if(firstNumber <= 80){
+
 gate = 22;
+
 }else if(firstNumber <= 240){
+
 gate = 21;
+
 }else{
+
 gate = 20;
+
 }
 
 }else{
 
 if(firstNumber <= 80){
+
 gate = 22;
+
 }else if(firstNumber <= 240){
+
 gate = 23;
+
 }else{
+
 gate = 24;
+
 }
 
 }
 
 
 const row =
-Math.floor(Math.random() * 45) + 1;
+Math.floor(
+Math.random() * 45
+) + 1;
 
 
 const numbers = [];
 
-for(let i=0;i<ticketCount;i++){
+
+for(
+let i=0;
+i<ticketCount;
+i++
+){
 
 numbers.push(
 firstNumber+i
@@ -1523,6 +1661,7 @@ firstNumber+i
 
 
 let score;
+
 
 if(row <= 5){
 
@@ -1562,7 +1701,7 @@ luck:getLuck(score)
 
 
 /* =========================
-   東京ドーム 2階
+   2ND FLOOR
 ========================= */
 
 function createTokyoDomeSecondFloor(){
@@ -1605,7 +1744,12 @@ maxRow
 
 const numbers = [];
 
-for(let i=0;i<ticketCount;i++){
+
+for(
+let i=0;
+i<ticketCount;
+i++
+){
 
 numbers.push(
 firstNumber+i
@@ -1615,6 +1759,7 @@ firstNumber+i
 
 
 let score;
+
 
 if(row <= 3){
 
@@ -1650,7 +1795,7 @@ luck:getLuck(score)
 
 
 /* =========================
-   東京ドーム バルコニー
+   BALCONY
 ========================= */
 
 function createTokyoDomeBalcony(){
@@ -1662,7 +1807,9 @@ Math.random() < 0.5
 
 
 const row =
-Math.floor(Math.random() * 20) + 1;
+Math.floor(
+Math.random() * 20
+) + 1;
 
 
 const firstNumber =
@@ -1674,7 +1821,12 @@ Math.random() *
 
 const numbers = [];
 
-for(let i=0;i<ticketCount;i++){
+
+for(
+let i=0;
+i<ticketCount;
+i++
+){
 
 numbers.push(
 firstNumber+i
@@ -1703,10 +1855,12 @@ luck:getLuck(3)
 
 
 /* =========================
-   東京ドーム 外野
+   OUTFIELD
 ========================= */
 
-function createTokyoDomeOutfield(isLimited){
+function createTokyoDomeOutfield(
+isLimited
+){
 
 const side =
 Math.random() < 0.5
@@ -1730,12 +1884,19 @@ Math.random() *
 
 
 const row =
-Math.floor(Math.random() * 21) + 1;
+Math.floor(
+Math.random() * 21
+) + 1;
 
 
 const numbers = [];
 
-for(let i=0;i<ticketCount;i++){
+
+for(
+let i=0;
+i<ticketCount;
+i++
+){
 
 numbers.push(
 firstNumber+i
@@ -1774,12 +1935,19 @@ Math.random() *
 
 
 const row =
-Math.floor(Math.random() * 21) + 1;
+Math.floor(
+Math.random() * 21
+) + 1;
 
 
 const numbers = [];
 
-for(let i=0;i<ticketCount;i++){
+
+for(
+let i=0;
+i<ticketCount;
+i++
+){
 
 numbers.push(
 firstNumber+i
@@ -1789,6 +1957,7 @@ firstNumber+i
 
 
 let score;
+
 
 if(row <= 3){
 
@@ -1823,7 +1992,7 @@ luck:getLuck(score)
 
 
 /* =========================
-   その他会場
+   OTHER VENUES
 ========================= */
 
 function createOtherVenueSeat(){
@@ -1853,7 +2022,9 @@ areas.length
 
 
 const row =
-Math.floor(Math.random() * 30) + 1;
+Math.floor(
+Math.random() * 30
+) + 1;
 
 
 const firstNumber =
@@ -1865,7 +2036,12 @@ Math.random() *
 
 const numbers = [];
 
-for(let i=0;i<ticketCount;i++){
+
+for(
+let i=0;
+i<ticketCount;
+i++
+){
 
 numbers.push(
 firstNumber+i
@@ -1875,7 +2051,9 @@ firstNumber+i
 
 
 const score =
-Math.floor(Math.random() * 4) + 2;
+Math.floor(
+Math.random() * 4
+) + 2;
 
 
 return {
@@ -1896,7 +2074,159 @@ luck:getLuck(score)
 
 
 /* =========================
-   座席作成
+   CREATE TOKYO DOME SEAT
+========================= */
+
+function createTokyoDomeSeat(){
+
+/* FC最速 */
+
+if(selectedLottery === "fast"){
+
+const r = Math.random();
+
+
+if(r < 0.50){
+
+return createTokyoDomeArena();
+
+}
+
+
+if(r < 0.85){
+
+return createTokyoDomeFirstFloor();
+
+}
+
+
+return createTokyoDomeOutfield(false);
+
+}
+
+
+/* FC・先行 */
+
+if(selectedLottery === "fc"){
+
+const r = Math.random();
+
+
+if(r < 0.02){
+
+let seat =
+createTokyoDomeArena();
+
+
+while(
+
+seat.block.includes(" Aブロック") ||
+seat.block.includes(" Bブロック") ||
+seat.block.includes(" Cブロック")
+
+){
+
+seat =
+createTokyoDomeArena();
+
+}
+
+return seat;
+
+}
+
+
+if(r < 0.40){
+
+return createTokyoDomeFirstFloor();
+
+}
+
+
+if(r < 0.65){
+
+return createTokyoDomeSecondFloor();
+
+}
+
+
+if(r < 0.80){
+
+return createTokyoDomeBalcony();
+
+}
+
+
+return createTokyoDomeOutfield(false);
+
+}
+
+
+/* 一般 */
+
+if(selectedLottery === "general"){
+
+const r = Math.random();
+
+
+if(r < 0.005){
+
+let seat =
+createTokyoDomeArena();
+
+
+while(
+
+!seat.block.includes(" Eブロック") &&
+!seat.block.includes(" Fブロック")
+
+){
+
+seat =
+createTokyoDomeArena();
+
+}
+
+return seat;
+
+}
+
+
+if(r < 0.25){
+
+return createTokyoDomeFirstFloor();
+
+}
+
+
+if(r < 0.75){
+
+return createTokyoDomeSecondFloor();
+
+}
+
+
+if(r < 0.85){
+
+return createTokyoDomeBalcony();
+
+}
+
+
+return createTokyoDomeOutfield(false);
+
+}
+
+
+/* 見切れ */
+
+return createTokyoDomeOutfield(true);
+
+}
+
+
+/* =========================
+   CREATE SEAT
 ========================= */
 
 function createSeat(){
@@ -1916,10 +2246,13 @@ return createOtherVenueSeat();
 
 
 /* =========================
-   結果表示
+   RESULT
 ========================= */
 
-function showResult(win,seat){
+function showResult(
+win,
+seat
+){
 
 lastResult = {
 
@@ -1949,7 +2282,7 @@ document
 "<div class='result-card'>" +
 
 "<div class='result-label'>" +
-"LOTTERY RESULT" +
+"チケドロ！ RESULT" +
 "</div>" +
 
 "<div class='result-title'>" +
@@ -2033,7 +2366,7 @@ document
 "<div class='result-card'>" +
 
 "<div class='result-label'>" +
-"LOTTERY RESULT" +
+"チケドロ！ RESULT" +
 "</div>" +
 
 "<div class='result-title'>" +
@@ -2099,7 +2432,9 @@ behavior:"smooth"
 
 document
 .getElementById("retryButton")
-.addEventListener("click",function(){
+.addEventListener(
+"click",
+function(){
 
 location.reload();
 
@@ -2108,7 +2443,9 @@ location.reload();
 
 document
 .getElementById("homeButton")
-.addEventListener("click",function(){
+.addEventListener(
+"click",
+function(){
 
 location.reload();
 
@@ -2117,7 +2454,9 @@ location.reload();
 
 document
 .getElementById("shareButton")
-.addEventListener("click",function(){
+.addEventListener(
+"click",
+function(){
 
 shareResult();
 
@@ -2127,7 +2466,7 @@ shareResult();
 
 
 /* =========================
-   抽選
+   RUN LOTTERY
 ========================= */
 
 function runLottery(){
@@ -2154,83 +2493,117 @@ b.disabled = true;
 });
 
 
-document.getElementById("minus").disabled = true;
+document.getElementById(
+"minus"
+).disabled = true;
 
-document.getElementById("plus").disabled = true;
+
+document.getElementById(
+"plus"
+).disabled = true;
 
 
 result.style.display = "none";
 
+
 loading.innerHTML =
-"🎫 抽選中……";
+"🎫 チケドロ抽選中……";
 
 
-setTimeout(function(){
+setTimeout(
+function(){
 
 loading.innerHTML =
 "🔎 当落結果を確認中……";
 
 
-setTimeout(function(){
+setTimeout(
+function(){
 
 loading.innerHTML =
 "💺 座席を決定しています……";
 
 
-setTimeout(function(){
+setTimeout(
+function(){
 
 const win =
-Math.random() < getWinRate();
+Math.random() <
+getWinRate();
+
 
 loading.innerHTML = "";
 
 
 let seat = null;
 
+
 if(win){
 
-seat = createSeat();
+seat =
+createSeat();
 
 }
 
-showResult(win,seat);
 
-},900);
+showResult(
+win,
+seat
+);
 
-},900);
 
-},900);
+},
+900
+);
+
+},
+900
+);
+
+},
+900
+);
 
 }
 
 
 /* =========================
-   共有画像作成
+   SHARE IMAGE
 ========================= */
 
 function createShareImage(){
 
-return new Promise(function(resolve,reject){
+return new Promise(
+function(resolve,reject){
 
 const canvas =
-document.getElementById("shareCanvas");
+document.getElementById(
+"shareCanvas"
+);
 
 const ctx =
 canvas.getContext("2d");
 
-const w = canvas.width;
-const h = canvas.height;
+const w =
+canvas.width;
 
+const h =
+canvas.height;
 
-/* 背景 */
 
 ctx.fillStyle = "#111";
-ctx.fillRect(0,0,w,h);
 
+ctx.fillRect(
+0,
+0,
+w,
+h
+);
 
-/* カード */
 
 ctx.fillStyle = "#fff";
+
+ctx.beginPath();
 
 ctx.roundRect(
 70,
@@ -2243,20 +2616,20 @@ h-140,
 ctx.fill();
 
 
-/* タイトル */
+ctx.textAlign = "center";
+
 
 ctx.fillStyle = "#111";
 
-ctx.textAlign = "center";
-
 ctx.font =
-"900 38px -apple-system,BlinkMacSystemFont,sans-serif";
+"900 48px -apple-system,BlinkMacSystemFont,sans-serif";
 
 ctx.fillText(
-"LIVE TICKET",
+"チケドロ！",
 w/2,
 145
 );
+
 
 ctx.font =
 "700 20px -apple-system,BlinkMacSystemFont,sans-serif";
@@ -2264,13 +2637,11 @@ ctx.font =
 ctx.fillStyle = "#999";
 
 ctx.fillText(
-"SIMULATOR",
+"LIVE TICKET SIMULATION",
 w/2,
 180
 );
 
-
-/* 結果 */
 
 ctx.fillStyle = "#111";
 
@@ -2286,8 +2657,6 @@ w/2,
 );
 
 
-/* 区切り線 */
-
 ctx.strokeStyle = "#ddd";
 
 ctx.lineWidth = 2;
@@ -2295,12 +2664,11 @@ ctx.lineWidth = 2;
 ctx.beginPath();
 
 ctx.moveTo(140,330);
+
 ctx.lineTo(w-140,330);
 
 ctx.stroke();
 
-
-/* 会場 */
 
 ctx.fillStyle = "#999";
 
@@ -2312,6 +2680,7 @@ ctx.fillText(
 w/2,
 390
 );
+
 
 ctx.fillStyle = "#111";
 
@@ -2325,8 +2694,6 @@ w/2,
 );
 
 
-/* 抽選 */
-
 ctx.fillStyle = "#999";
 
 ctx.font =
@@ -2337,6 +2704,7 @@ ctx.fillText(
 w/2,
 500
 );
+
 
 ctx.fillStyle = "#111";
 
@@ -2350,12 +2718,11 @@ w/2,
 );
 
 
-/* 当選席 */
-
 if(lastResult.win){
 
 const seat =
 lastResult.seat;
+
 
 ctx.fillStyle = "#999";
 
@@ -2368,26 +2735,18 @@ w/2,
 625
 );
 
+
 ctx.fillStyle = "#111";
 
 ctx.font =
-"900 31px -apple-system,BlinkMacSystemFont,sans-serif";
-
-let blockText =
-seat.block;
-
-if(blockText.length > 22){
-
-ctx.font =
-"900 25px -apple-system,BlinkMacSystemFont,sans-serif";
-
-}
+"900 30px -apple-system,BlinkMacSystemFont,sans-serif";
 
 ctx.fillText(
-blockText,
+seat.block,
 w/2,
 675
 );
+
 
 ctx.font =
 "900 38px -apple-system,BlinkMacSystemFont,sans-serif";
@@ -2402,8 +2761,6 @@ w/2,
 );
 
 
-/* 席運 */
-
 ctx.font =
 "900 28px -apple-system,BlinkMacSystemFont,sans-serif";
 
@@ -2412,6 +2769,7 @@ seat.luck,
 w/2,
 820
 );
+
 
 ctx.font =
 "900 34px -apple-system,BlinkMacSystemFont,sans-serif";
@@ -2444,8 +2802,6 @@ w/2,
 }
 
 
-/* 枚数 */
-
 ctx.fillStyle = "#999";
 
 ctx.font =
@@ -2460,16 +2816,16 @@ w/2,
 );
 
 
-/* 下部 */
-
 ctx.strokeStyle = "#ddd";
 
 ctx.beginPath();
 
 ctx.moveTo(140,1020);
+
 ctx.lineTo(w-140,1020);
 
 ctx.stroke();
+
 
 ctx.fillStyle = "#999";
 
@@ -2482,21 +2838,33 @@ w/2,
 1080
 );
 
+
 ctx.font =
 "900 25px -apple-system,BlinkMacSystemFont,sans-serif";
 
 ctx.fillStyle = "#111";
 
 ctx.fillText(
-"LIVE TICKET SIMULATOR",
+"チケドロ！",
 w/2,
 1160
 );
 
 
-/* PNG化 */
+ctx.font =
+"700 15px -apple-system,BlinkMacSystemFont,sans-serif";
 
-canvas.toBlob(function(blob){
+ctx.fillStyle = "#aaa";
+
+ctx.fillText(
+"LIVE TICKET SIMULATION",
+w/2,
+1190
+);
+
+
+canvas.toBlob(
+function(blob){
 
 if(!blob){
 
@@ -2508,7 +2876,9 @@ return;
 
 resolve(blob);
 
-},"image/png");
+},
+"image/png"
+);
 
 });
 
@@ -2516,13 +2886,15 @@ resolve(blob);
 
 
 /* =========================
-   共有
+   SHARE
 ========================= */
 
 async function shareResult(){
 
 const button =
-document.getElementById("shareButton");
+document.getElementById(
+"shareButton"
+);
 
 button.disabled = true;
 
@@ -2539,7 +2911,7 @@ await createShareImage();
 const file =
 new File(
 [blob],
-"live-ticket-result.png",
+"チケドロ-result.png",
 {
 type:"image/png"
 }
@@ -2551,7 +2923,7 @@ lastResult.win
 
 ?
 
-"🎉 LIVE TICKET SIMULATOR\n" +
+"🎫 チケドロ！\n" +
 lastResult.venue +
 "\n" +
 lastResult.lottery +
@@ -2564,71 +2936,66 @@ lastResult.seat.numbers.join("・") +
 "番\n" +
 lastResult.seat.luck +
 "\n" +
-getStars(lastResult.seat.score)
+getStars(
+lastResult.seat.score
+)
 
 :
 
-"😭 LIVE TICKET SIMULATOR\n" +
+"🎫 チケドロ！\n" +
 lastResult.venue +
 "\n" +
 lastResult.lottery +
 "\n" +
-"今回は落選…";
+"😭 今回は落選…";
 
-
-/*
-iPhone / Android
-標準共有メニュー
-*/
 
 if(
+
 navigator.share &&
 navigator.canShare &&
 navigator.canShare({
 files:[file]
 })
+
 ){
 
 await navigator.share({
 
-title:
-"LIVE TICKET SIMULATOR",
+title:"チケドロ！",
 
-text:
-shareText,
+text:shareText,
 
-files:[
-file
-]
+files:[file]
 
 });
 
-}else if(navigator.share){
+}else if(
+navigator.share
+){
 
 await navigator.share({
 
-title:
-"LIVE TICKET SIMULATOR",
+title:"チケドロ！",
 
-text:
-shareText
+text:shareText
 
 });
 
 }else{
 
-/*
-PCなど共有API非対応の場合
-画像を新しいタブで表示
-*/
-
 const url =
-URL.createObjectURL(blob);
+URL.createObjectURL(
+blob
+);
 
-window.open(url,"_blank");
+window.open(
+url,
+"_blank"
+);
 
 alert(
-"この端末では標準共有機能に対応していません。\n画像が新しい画面で開きます。"
+"この端末では標準共有機能に対応していません。画像を新しい画面で表示します。"
 );
 
 }
@@ -2650,12 +3017,14 @@ button.textContent =
 
 
 /* =========================
-   抽選ボタン
+   LOTTERY BUTTON
 ========================= */
 
 document
 .getElementById("lotteryButton")
-.addEventListener("click",function(){
+.addEventListener(
+"click",
+function(){
 
 runLottery();
 

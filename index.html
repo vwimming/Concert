@@ -6,7 +6,9 @@
 <title>LIVE TICKET SIMULATOR</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
@@ -134,6 +136,29 @@ button{
   line-height:1.6;
 }
 
+/* 座席データ説明 */
+
+.seat-data-note{
+  margin-top:16px;
+  padding:11px 12px;
+  border-radius:9px;
+  background:#f7f7f7;
+  color:#888;
+  font-size:10px;
+  line-height:1.6;
+}
+
+.seat-data-note strong{
+  color:#666;
+  font-size:10px;
+}
+
+.data-status{
+  margin-top:5px;
+  color:#999;
+  font-size:9px;
+}
+
 .type-list,
 .venue-list{
   display:grid;
@@ -163,6 +188,27 @@ button{
   margin-top:6px;
   color:#888;
   font-size:12px;
+}
+
+.venue-status{
+  display:block;
+  margin-top:9px;
+  font-size:11px;
+  font-weight:800;
+}
+
+.status-ready{
+  color:#d40000;
+}
+
+.status-preparing{
+  color:#777;
+}
+
+.legend{
+  padding:0 18px 4px;
+  color:#888;
+  font-size:10px;
 }
 
 .setting-area{
@@ -347,8 +393,31 @@ button{
   font-size:12px;
 }
 
-.retry-button{
+.result-buttons{
+  display:grid;
+  gap:10px;
   margin-top:23px;
+}
+
+.share-button{
+  padding:15px;
+  border:none;
+  border-radius:11px;
+  background:#111;
+  color:white;
+  font-weight:900;
+  font-size:14px;
+}
+
+.retry-button{
+  padding:14px 24px;
+  border:1px solid #ddd;
+  border-radius:11px;
+  background:white;
+  font-weight:900;
+}
+
+.home-button{
   padding:14px 24px;
   border:1px solid #ddd;
   border-radius:11px;
@@ -363,6 +432,12 @@ button{
   font-size:10px;
   line-height:1.6;
 }
+
+/* 共有用・画面外 */
+
+#shareCanvas{
+  display:none;
+}
 </style>
 </head>
 
@@ -375,7 +450,13 @@ LIVE TICKET
 <span>SIMULATOR</span>
 </div>
 
+
+<!-- =========================
+     HOME
+========================= -->
+
 <div id="home" class="home">
+
 <div class="home-inner">
 
 <div class="ticket-icon">🎫</div>
@@ -408,59 +489,128 @@ LIVE TICKET LOTTERY
 </div>
 
 
+<!-- =========================
+     TYPE
+========================= -->
+
 <div id="typeScreen" class="screen">
 
 <div class="hero">
-<div class="step">STEP 01</div>
 
-<h2>会場タイプを選択</h2>
+<div class="step">
+STEP 01
+</div>
+
+<h2>
+会場タイプを選択
+</h2>
 
 <p>
 ライブ会場のタイプを選んでください。
 </p>
+
 </div>
 
 <div class="type-list">
 
 <button class="type-card" data-type="dome">
-<strong>🏟️ DOME / STADIUM</strong>
-<small>ドーム・スタジアム</small>
+
+<strong>
+🏟️ DOME / STADIUM
+</strong>
+
+<small>
+ドーム・スタジアム
+</small>
+
 </button>
+
 
 <button class="type-card" data-type="arena">
-<strong>🎤 ARENA / HALL</strong>
-<small>アリーナ・ホール</small>
+
+<strong>
+🎤 ARENA / HALL
+</strong>
+
+<small>
+アリーナ・ホール
+</small>
+
 </button>
 
 </div>
+
 </div>
 
+
+<!-- =========================
+     VENUE
+========================= -->
 
 <div id="venueScreen" class="screen">
 
 <div class="hero">
-<div class="step">STEP 02</div>
 
-<h2>会場を選択</h2>
+<div class="step">
+STEP 02
+</div>
+
+<h2>
+会場を選択
+</h2>
 
 <p>
 シミュレーションしたい会場を選んでください。
 </p>
+
+<div class="seat-data-note">
+
+<strong>
+座席データについて
+</strong>
+
+<br>
+
+実際の会場にできるだけ近づけた
+座席データを使用しています。
+
+<div class="data-status">
+※会場によって対応状況が異なります。
 </div>
+
+</div>
+
+</div>
+
+
+<div class="legend">
+🔴【座席データ対応】　⚪️【座席データ準備中】
+</div>
+
 
 <div id="venueList" class="venue-list"></div>
 
 </div>
 
 
+<!-- =========================
+     SETTING
+========================= -->
+
 <div id="settingScreen" class="screen">
 
 <div class="hero">
-<div class="step">STEP 03</div>
 
-<h2>チケットを設定</h2>
+<div class="step">
+STEP 03
+</div>
+
+<h2>
+チケットを設定
+</h2>
 
 <p id="selectedVenueText"></p>
+
 </div>
 
 
@@ -472,24 +622,57 @@ LIVE TICKET LOTTERY
 
 <div class="lottery-list">
 
+
 <button class="lottery-option" data-lottery="fast">
-<strong>FC最速一次抽選</strong>
-<small>アリーナ・1階・外野を中心とした最速先行。</small>
+
+<strong>
+FC最速一次抽選
+</strong>
+
+<small>
+アリーナ・1階・外野を中心とした最速先行。
+</small>
+
 </button>
+
 
 <button class="lottery-option" data-lottery="fc">
-<strong>FC・先行抽選</strong>
-<small>スタンド後方・バルコニー・2階・外野なども対象。</small>
+
+<strong>
+FC・先行抽選
+</strong>
+
+<small>
+スタンド・2階・バルコニー・外野などが中心。
+アリーナはかなりレア。
+</small>
+
 </button>
+
 
 <button class="lottery-option" data-lottery="general">
-<strong>一般抽選</strong>
-<small>会場内の幅広い座席からランダムに決定。</small>
+
+<strong>
+一般抽選
+</strong>
+
+<small>
+2階席を中心とした幅広い座席からランダムに決定。
+</small>
+
 </button>
 
+
 <button class="lottery-option" data-lottery="release">
-<strong>見切れ・機材開放席</strong>
-<small>見切れ席を中心とした激レア抽選。</small>
+
+<strong>
+見切れ・機材開放席
+</strong>
+
+<small>
+かなり当たりにくい激レア抽選。
+</small>
+
 </button>
 
 </div>
@@ -504,12 +687,14 @@ LIVE TICKET LOTTERY
 
 <div class="info-card">
 
-<strong>🎫 全席対象・座席ランダム</strong>
+<strong>
+🎫 抽選方式によって座席傾向が変化
+</strong>
 
 <br><br>
 
-抽選方式によって、
-対象となる座席エリアが変わります。
+FC最速ではアリーナが出やすく、
+FC・先行や一般ではスタンド・2階席などが中心になります。
 
 <br><br>
 
@@ -517,6 +702,7 @@ LIVE TICKET LOTTERY
 基本的に隣り合った座席になります。
 
 </div>
+
 </div>
 
 
@@ -528,19 +714,28 @@ LIVE TICKET LOTTERY
 
 <div class="count-box">
 
-<strong>チケット枚数</strong>
+<strong>
+チケット枚数
+</strong>
 
 <div class="counter">
 
-<button id="minus">−</button>
+<button id="minus">
+−
+</button>
 
-<span id="ticketCount">2</span>
+<span id="ticketCount">
+2
+</span>
 
-<button id="plus">＋</button>
+<button id="plus">
+＋
+</button>
 
 </div>
 
 </div>
+
 </div>
 
 
@@ -548,7 +743,9 @@ LIVE TICKET LOTTERY
 id="lotteryButton"
 class="main-button"
 disabled>
+
 🎫 抽選する
+
 </button>
 
 </div>
@@ -560,12 +757,20 @@ disabled>
 
 
 <div class="disclaimer">
+
 ※このサイトはライブチケット抽選を楽しむための
 非公式・架空のシミュレーターです。<br>
+
 実際の抽選結果・当選確率・座席とは関係ありません。
+
 </div>
 
 </div>
+
+
+<!-- 共有画像作成用 -->
+
+<canvas id="shareCanvas" width="1080" height="1350"></canvas>
 
 
 <script>
@@ -575,6 +780,8 @@ let selectedVenue = null;
 let selectedLottery = "";
 let ticketCount = 2;
 
+let lastResult = null;
+
 
 /* =========================
    会場データ
@@ -582,80 +789,88 @@ let ticketCount = 2;
 
 const venueData = {
 
-dome: [
+dome:[
 
 {
 name:"東京ドーム",
-location:"東京都文京区"
+location:"東京都文京区",
+ready:true
 },
 
 {
 name:"京セラドーム大阪",
-location:"大阪府大阪市"
-},
-
-{
-name:"ベルーナドーム",
-location:"埼玉県所沢市"
+location:"大阪府大阪市",
+ready:false
 },
 
 {
 name:"バンテリンドーム ナゴヤ",
-location:"愛知県名古屋市"
+location:"愛知県名古屋市",
+ready:false
 },
 
 {
 name:"みずほPayPayドーム福岡",
-location:"福岡県福岡市"
+location:"福岡県福岡市",
+ready:false
 },
 
 {
-name:"エスコンフィールドHOKKAIDO",
-location:"北海道北広島市"
+name:"大和ハウス プレミストドーム",
+location:"北海道札幌市",
+ready:false
 }
 
 ],
 
-arena: [
+arena:[
 
 {
 name:"Kアリーナ横浜",
-location:"神奈川県横浜市"
+location:"神奈川県横浜市",
+ready:false
 },
 
 {
 name:"横浜アリーナ",
-location:"神奈川県横浜市"
+location:"神奈川県横浜市",
+ready:false
 },
 
 {
 name:"さいたまスーパーアリーナ",
-location:"埼玉県さいたま市"
+location:"埼玉県さいたま市",
+ready:false
 },
 
 {
 name:"日本武道館",
-location:"東京都千代田区"
+location:"東京都千代田区",
+ready:false
 },
 
 {
 name:"大阪城ホール",
-location:"大阪府大阪市"
+location:"大阪府大阪市",
+ready:false
 },
 
 {
 name:"ぴあアリーナMM",
-location:"神奈川県横浜市"
+location:"神奈川県横浜市",
+ready:false
 },
 
 {
 name:"有明アリーナ",
-location:"東京都江東区"
+location:"東京都江東区",
+ready:false
 },
 
 {
 name:"LaLa arena TOKYO-BAY",
-location:"千葉県船橋市"
+location:"千葉県船橋市",
+ready:false
 }
 
 ]
@@ -686,10 +901,12 @@ behavior:"smooth"
 
 
 /* =========================
-   スタート
+   START
 ========================= */
 
-document.getElementById("startButton").addEventListener("click",function(){
+document
+.getElementById("startButton")
+.addEventListener("click",function(){
 
 document.getElementById("home").style.display = "none";
 
@@ -702,35 +919,64 @@ showScreen("typeScreen");
    会場タイプ
 ========================= */
 
-document.querySelectorAll(".type-card").forEach(function(button){
+document
+.querySelectorAll(".type-card")
+.forEach(function(button){
 
 button.addEventListener("click",function(){
 
 venueType = button.dataset.type;
 
-const list = document.getElementById("venueList");
+const list =
+document.getElementById("venueList");
 
 list.innerHTML = "";
 
 venueData[venueType].forEach(function(venue){
 
-const b = document.createElement("button");
+const b =
+document.createElement("button");
 
 b.className = "venue";
 
+let statusHTML;
+
+if(venue.ready){
+
+statusHTML =
+"<span class='venue-status status-ready'>" +
+"🔴【座席データ対応】" +
+"</span>";
+
+}else{
+
+statusHTML =
+"<span class='venue-status status-preparing'>" +
+"⚪️【座席データ準備中】" +
+"</span>";
+
+}
+
 b.innerHTML =
+
 "<strong>" +
 venue.name +
 "</strong>" +
+
 "<small>" +
 venue.location +
-"</small>";
+"</small>" +
+
+statusHTML;
+
 
 b.addEventListener("click",function(){
 
 selectedVenue = venue;
 
-document.getElementById("selectedVenueText").textContent =
+document
+.getElementById("selectedVenueText")
+.textContent =
 venue.name;
 
 showScreen("settingScreen");
@@ -752,11 +998,15 @@ showScreen("venueScreen");
    抽選方式
 ========================= */
 
-document.querySelectorAll(".lottery-option").forEach(function(button){
+document
+.querySelectorAll(".lottery-option")
+.forEach(function(button){
 
 button.addEventListener("click",function(){
 
-document.querySelectorAll(".lottery-option").forEach(function(b){
+document
+.querySelectorAll(".lottery-option")
+.forEach(function(b){
 
 b.classList.remove("selected");
 
@@ -764,7 +1014,8 @@ b.classList.remove("selected");
 
 button.classList.add("selected");
 
-selectedLottery = button.dataset.lottery;
+selectedLottery =
+button.dataset.lottery;
 
 checkReady();
 
@@ -777,13 +1028,17 @@ checkReady();
    枚数
 ========================= */
 
-document.getElementById("minus").addEventListener("click",function(){
+document
+.getElementById("minus")
+.addEventListener("click",function(){
 
 if(ticketCount > 1){
 
 ticketCount--;
 
-document.getElementById("ticketCount").textContent =
+document
+.getElementById("ticketCount")
+.textContent =
 ticketCount;
 
 }
@@ -791,13 +1046,17 @@ ticketCount;
 });
 
 
-document.getElementById("plus").addEventListener("click",function(){
+document
+.getElementById("plus")
+.addEventListener("click",function(){
 
 if(ticketCount < 4){
 
 ticketCount++;
 
-document.getElementById("ticketCount").textContent =
+document
+.getElementById("ticketCount")
+.textContent =
 ticketCount;
 
 }
@@ -806,13 +1065,16 @@ ticketCount;
 
 
 /* =========================
-   抽選ボタン準備
+   準備確認
 ========================= */
 
 function checkReady(){
 
-document.getElementById("lotteryButton").disabled =
-!selectedLottery || !selectedVenue;
+document
+.getElementById("lotteryButton")
+.disabled =
+!selectedLottery ||
+!selectedVenue;
 
 }
 
@@ -918,7 +1180,8 @@ return "★★☆☆☆";
 
 
 /* =========================
-   東京ドーム2階列数
+   東京ドーム
+   2階最大列
 ========================= */
 
 function getTokyoDomeSecondFloorMaxRow(number){
@@ -930,7 +1193,8 @@ return 30;
 if(number <= 340){
 
 const progress =
-(number - 101) / (340 - 101);
+(number - 101) /
+(340 - 101);
 
 return Math.max(
 21,
@@ -942,7 +1206,8 @@ Math.round(30 - 9 * progress)
 if(number <= 461){
 
 const progress =
-(number - 341) / (461 - 341);
+(number - 341) /
+(461 - 341);
 
 return Math.max(
 5,
@@ -957,139 +1222,67 @@ return 1;
 
 
 /* =========================
-   東京ドーム
-   座席抽選
+   東京ドーム座席
 ========================= */
 
 function createTokyoDomeSeat(){
 
 
-/*
-========================================
-FC最速一次抽選
-========================================
-
-アリーナ
-1階
-外野
-
-この3種類だけ。
-*/
+/* FC最速 */
 
 if(selectedLottery === "fast"){
 
-const typeRandom =
-Math.random();
+const r = Math.random();
 
-
-/* アリーナ 40% */
-
-if(typeRandom < 0.40){
-
+if(r < 0.50){
 return createTokyoDomeArena();
-
 }
 
-
-/* 1階 40% */
-
-if(typeRandom < 0.80){
-
+if(r < 0.85){
 return createTokyoDomeFirstFloor();
-
 }
-
-
-/* 外野 20% */
 
 return createTokyoDomeOutfield(false);
 
 }
 
 
-/*
-========================================
-FC・先行抽選
-========================================
-
-アリーナ
-1階
-2階
-バルコニー
-外野
-*/
+/* FC先行 */
 
 if(selectedLottery === "fc"){
 
-const r =
-Math.random();
+const r = Math.random();
 
+if(r < 0.02){
 
-if(r < 0.25){
+let seat =
+createTokyoDomeArena();
 
-return createTokyoDomeArena();
+while(
+!seat.block.includes(" Dブロック") &&
+!seat.block.includes(" Eブロック") &&
+!seat.block.includes(" Fブロック")
+){
 
-}
-
-if(r < 0.55){
-
-return createTokyoDomeFirstFloor();
-
-}
-
-if(r < 0.72){
-
-return createTokyoDomeSecondFloor();
+seat =
+createTokyoDomeArena();
 
 }
 
-if(r < 0.82){
-
-return createTokyoDomeBalcony();
-
-}
-
-return createTokyoDomeOutfield(false);
-
-}
-
-
-/*
-========================================
-一般抽選
-========================================
-
-さらに幅広く出現。
-*/
-
-if(selectedLottery === "general"){
-
-const r =
-Math.random();
-
-
-if(r < 0.12){
-
-return createTokyoDomeArena();
+return seat;
 
 }
 
 if(r < 0.40){
-
 return createTokyoDomeFirstFloor();
-
 }
 
-if(r < 0.68){
-
+if(r < 0.65){
 return createTokyoDomeSecondFloor();
-
 }
 
-if(r < 0.82){
-
+if(r < 0.80){
 return createTokyoDomeBalcony();
-
 }
 
 return createTokyoDomeOutfield(false);
@@ -1097,11 +1290,49 @@ return createTokyoDomeOutfield(false);
 }
 
 
-/*
-========================================
-見切れ・機材開放席
-========================================
-*/
+/* 一般 */
+
+if(selectedLottery === "general"){
+
+const r = Math.random();
+
+if(r < 0.005){
+
+let seat =
+createTokyoDomeArena();
+
+while(
+!seat.block.includes(" Eブロック") &&
+!seat.block.includes(" Fブロック")
+){
+
+seat =
+createTokyoDomeArena();
+
+}
+
+return seat;
+
+}
+
+if(r < 0.25){
+return createTokyoDomeFirstFloor();
+}
+
+if(r < 0.75){
+return createTokyoDomeSecondFloor();
+}
+
+if(r < 0.85){
+return createTokyoDomeBalcony();
+}
+
+return createTokyoDomeOutfield(false);
+
+}
+
+
+/* 見切れ */
 
 return createTokyoDomeOutfield(true);
 
@@ -1109,13 +1340,12 @@ return createTokyoDomeOutfield(true);
 
 
 /* =========================
-   アリーナ
+   東京ドーム アリーナ
 ========================= */
 
 function createTokyoDomeArena(){
 
-const r =
-Math.random();
+const r = Math.random();
 
 let block;
 
@@ -1230,7 +1460,7 @@ luck:getLuck(score)
 
 
 /* =========================
-   1階
+   東京ドーム 1階
 ========================= */
 
 function createTokyoDomeFirstFloor(){
@@ -1254,37 +1484,24 @@ maxStart
 
 let gate;
 
-
 if(side === "1塁側"){
 
 if(firstNumber <= 80){
-
 gate = 22;
-
 }else if(firstNumber <= 240){
-
 gate = 21;
-
 }else{
-
 gate = 20;
-
 }
 
 }else{
 
 if(firstNumber <= 80){
-
 gate = 22;
-
 }else if(firstNumber <= 240){
-
 gate = 23;
-
 }else{
-
 gate = 24;
-
 }
 
 }
@@ -1345,7 +1562,7 @@ luck:getLuck(score)
 
 
 /* =========================
-   2階
+   東京ドーム 2階
 ========================= */
 
 function createTokyoDomeSecondFloor(){
@@ -1374,7 +1591,9 @@ maxStart
 
 
 const maxRow =
-getTokyoDomeSecondFloorMaxRow(firstNumber);
+getTokyoDomeSecondFloorMaxRow(
+firstNumber
+);
 
 
 const row =
@@ -1431,7 +1650,7 @@ luck:getLuck(score)
 
 
 /* =========================
-   バルコニー
+   東京ドーム バルコニー
 ========================= */
 
 function createTokyoDomeBalcony(){
@@ -1441,12 +1660,6 @@ Math.random() < 0.5
 ? "1塁側"
 : "3塁側";
 
-
-/*
-バルコニーは今回、
-架空の範囲として
-1～20列・1～200番を使用。
-*/
 
 const row =
 Math.floor(Math.random() * 20) + 1;
@@ -1490,7 +1703,7 @@ luck:getLuck(3)
 
 
 /* =========================
-   外野
+   東京ドーム 外野
 ========================= */
 
 function createTokyoDomeOutfield(isLimited){
@@ -1506,11 +1719,6 @@ side === "ライト"
 ? 25
 : 11;
 
-
-/*
-見切れ席
-561～600番
-*/
 
 if(isLimited){
 
@@ -1557,11 +1765,6 @@ luck:getLuck(2)
 
 }
 
-
-/*
-通常外野
-501～560番
-*/
 
 const firstNumber =
 Math.floor(
@@ -1620,12 +1823,12 @@ luck:getLuck(score)
 
 
 /* =========================
-   他の会場
+   その他会場
 ========================= */
 
 function createOtherVenueSeat(){
 
-let areas = [
+const areas = [
 
 "アリーナ Aブロック",
 "アリーナ Bブロック",
@@ -1671,7 +1874,7 @@ firstNumber+i
 }
 
 
-let score =
+const score =
 Math.floor(Math.random() * 4) + 2;
 
 
@@ -1713,7 +1916,218 @@ return createOtherVenueSeat();
 
 
 /* =========================
-   抽選実行
+   結果表示
+========================= */
+
+function showResult(win,seat){
+
+lastResult = {
+
+win:win,
+
+seat:seat,
+
+venue:selectedVenue.name,
+
+lottery:getLotteryName(),
+
+ticketCount:ticketCount
+
+};
+
+
+if(win){
+
+const numbers =
+seat.numbers.join("・");
+
+
+document
+.getElementById("result")
+.innerHTML =
+
+"<div class='result-card'>" +
+
+"<div class='result-label'>" +
+"LOTTERY RESULT" +
+"</div>" +
+
+"<div class='result-title'>" +
+"🎉 当選！！" +
+"</div>" +
+
+"<div class='result-info'>" +
+
+"会場：<strong>" +
+selectedVenue.name +
+"</strong><br>" +
+
+"抽選：<strong>" +
+getLotteryName() +
+"</strong><br>" +
+
+"申込枚数：<strong>" +
+ticketCount +
+"枚</strong>" +
+
+"</div>" +
+
+"<div class='seat-label'>" +
+"YOUR SEAT" +
+"</div>" +
+
+"<div class='seat-main'>" +
+
+seat.block +
+"<br>" +
+
+seat.row +
+"列 " +
+numbers +
+"番" +
+
+"</div>" +
+
+"<div class='seat-sub'>" +
+"※架空の座席です" +
+"</div>" +
+
+"<div class='luck'>" +
+seat.luck +
+"</div>" +
+
+"<div class='stars'>" +
+getStars(seat.score) +
+"</div>" +
+
+"<div class='score'>" +
+"席運 " +
+seat.score +
+" / 5" +
+"</div>" +
+
+"<div class='result-buttons'>" +
+
+"<button id='shareButton' class='share-button'>" +
+"📤 結果をシェア" +
+"</button>" +
+
+"<button id='retryButton' class='retry-button'>" +
+"🔄 もう一度抽選する" +
+"</button>" +
+
+"<button id='homeButton' class='home-button'>" +
+"🏠 最初に戻る" +
+"</button>" +
+
+"</div>" +
+
+"</div>";
+
+}else{
+
+document
+.getElementById("result")
+.innerHTML =
+
+"<div class='result-card'>" +
+
+"<div class='result-label'>" +
+"LOTTERY RESULT" +
+"</div>" +
+
+"<div class='result-title'>" +
+"😭 落選…" +
+"</div>" +
+
+"<div class='result-info'>" +
+
+"会場：<strong>" +
+selectedVenue.name +
+"</strong><br>" +
+
+"抽選：<strong>" +
+getLotteryName() +
+"</strong><br>" +
+
+"申込枚数：<strong>" +
+ticketCount +
+"枚</strong>" +
+
+"</div>" +
+
+"<div style='margin-top:22px;color:#888;line-height:1.8;'>" +
+
+"今回は残念でした……<br>" +
+"次のチャンスに期待！" +
+
+"</div>" +
+
+"<div class='result-buttons'>" +
+
+"<button id='shareButton' class='share-button'>" +
+"📤 結果をシェア" +
+"</button>" +
+
+"<button id='retryButton' class='retry-button'>" +
+"🔄 もう一度抽選する" +
+"</button>" +
+
+"<button id='homeButton' class='home-button'>" +
+"🏠 最初に戻る" +
+"</button>" +
+
+"</div>" +
+
+"</div>";
+
+}
+
+
+document
+.getElementById("result")
+.style.display =
+"block";
+
+
+document
+.getElementById("result")
+.scrollIntoView({
+behavior:"smooth"
+});
+
+
+document
+.getElementById("retryButton")
+.addEventListener("click",function(){
+
+location.reload();
+
+});
+
+
+document
+.getElementById("homeButton")
+.addEventListener("click",function(){
+
+location.reload();
+
+});
+
+
+document
+.getElementById("shareButton")
+.addEventListener("click",function(){
+
+shareResult();
+
+});
+
+}
+
+
+/* =========================
+   抽選
 ========================= */
 
 function runLottery(){
@@ -1771,155 +2185,466 @@ Math.random() < getWinRate();
 loading.innerHTML = "";
 
 
+let seat = null;
+
 if(win){
 
-const seat =
-createSeat();
+seat = createSeat();
 
+}
 
-const numbers =
-seat.numbers.join("・");
+showResult(win,seat);
 
+},900);
 
-result.innerHTML =
+},900);
 
-"<div class='result-card'>" +
-
-"<div class='result-label'>" +
-"LOTTERY RESULT" +
-"</div>" +
-
-"<div class='result-title'>" +
-"🎉 当選！！" +
-"</div>" +
-
-"<div class='result-info'>" +
-
-"会場：<strong>" +
-selectedVenue.name +
-"</strong><br>" +
-
-"抽選：<strong>" +
-getLotteryName() +
-"</strong><br>" +
-
-"座席：抽選方式に応じてランダム<br>" +
-
-"申込枚数：<strong>" +
-ticketCount +
-"枚</strong>" +
-
-"</div>" +
-
-"<div class='seat-label'>" +
-"YOUR SEAT" +
-"</div>" +
-
-"<div class='seat-main'>" +
-
-seat.block +
-"<br>" +
-
-seat.row +
-"列 " +
-numbers +
-"番" +
-
-"</div>" +
-
-"<div class='seat-sub'>" +
-"※架空の座席です" +
-"</div>" +
-
-"<div class='luck'>" +
-seat.luck +
-"</div>" +
-
-"<div class='stars'>" +
-getStars(seat.score) +
-"</div>" +
-
-"<div class='score'>" +
-"席運 " +
-seat.score +
-" / 5" +
-"</div>" +
-
-"<button id='retryButton' class='retry-button'>" +
-"🔄 もう一度抽選する" +
-"</button>" +
-
-"</div>";
-
-}else{
-
-result.innerHTML =
-
-"<div class='result-card'>" +
-
-"<div class='result-label'>" +
-"LOTTERY RESULT" +
-"</div>" +
-
-"<div class='result-title'>" +
-"😭 落選…" +
-"</div>" +
-
-"<div class='result-info'>" +
-
-"会場：<strong>" +
-selectedVenue.name +
-"</strong><br>" +
-
-"抽選：<strong>" +
-getLotteryName() +
-"</strong><br>" +
-
-"申込枚数：<strong>" +
-ticketCount +
-"枚</strong>" +
-
-"</div>" +
-
-"<div style='margin-top:22px;color:#888;line-height:1.8;'>" +
-
-"今回は残念でした……<br>" +
-"次のチャンスに期待！" +
-
-"</div>" +
-
-"<button id='retryButton' class='retry-button'>" +
-"🔄 もう一度抽選する" +
-"</button>" +
-
-"</div>";
+},900);
 
 }
 
 
-result.style.display =
-"block";
+/* =========================
+   共有画像作成
+========================= */
+
+function createShareImage(){
+
+return new Promise(function(resolve,reject){
+
+const canvas =
+document.getElementById("shareCanvas");
+
+const ctx =
+canvas.getContext("2d");
+
+const w = canvas.width;
+const h = canvas.height;
 
 
-result.scrollIntoView({
-behavior:"smooth"
+/* 背景 */
+
+ctx.fillStyle = "#111";
+ctx.fillRect(0,0,w,h);
+
+
+/* カード */
+
+ctx.fillStyle = "#fff";
+
+ctx.roundRect(
+70,
+70,
+w-140,
+h-140,
+35
+);
+
+ctx.fill();
+
+
+/* タイトル */
+
+ctx.fillStyle = "#111";
+
+ctx.textAlign = "center";
+
+ctx.font =
+"900 38px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+"LIVE TICKET",
+w/2,
+145
+);
+
+ctx.font =
+"700 20px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillStyle = "#999";
+
+ctx.fillText(
+"SIMULATOR",
+w/2,
+180
+);
+
+
+/* 結果 */
+
+ctx.fillStyle = "#111";
+
+ctx.font =
+"900 58px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+lastResult.win
+? "🎉 当選！！"
+: "😭 落選…",
+w/2,
+285
+);
+
+
+/* 区切り線 */
+
+ctx.strokeStyle = "#ddd";
+
+ctx.lineWidth = 2;
+
+ctx.beginPath();
+
+ctx.moveTo(140,330);
+ctx.lineTo(w-140,330);
+
+ctx.stroke();
+
+
+/* 会場 */
+
+ctx.fillStyle = "#999";
+
+ctx.font =
+"700 20px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+"VENUE",
+w/2,
+390
+);
+
+ctx.fillStyle = "#111";
+
+ctx.font =
+"900 32px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+lastResult.venue,
+w/2,
+435
+);
+
+
+/* 抽選 */
+
+ctx.fillStyle = "#999";
+
+ctx.font =
+"700 20px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+"LOTTERY",
+w/2,
+500
+);
+
+ctx.fillStyle = "#111";
+
+ctx.font =
+"800 27px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+lastResult.lottery,
+w/2,
+545
+);
+
+
+/* 当選席 */
+
+if(lastResult.win){
+
+const seat =
+lastResult.seat;
+
+ctx.fillStyle = "#999";
+
+ctx.font =
+"700 20px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+"YOUR SEAT",
+w/2,
+625
+);
+
+ctx.fillStyle = "#111";
+
+ctx.font =
+"900 31px -apple-system,BlinkMacSystemFont,sans-serif";
+
+let blockText =
+seat.block;
+
+if(blockText.length > 22){
+
+ctx.font =
+"900 25px -apple-system,BlinkMacSystemFont,sans-serif";
+
+}
+
+ctx.fillText(
+blockText,
+w/2,
+675
+);
+
+ctx.font =
+"900 38px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+seat.row +
+"列 " +
+seat.numbers.join("・") +
+"番",
+w/2,
+735
+);
+
+
+/* 席運 */
+
+ctx.font =
+"900 28px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+seat.luck,
+w/2,
+820
+);
+
+ctx.font =
+"900 34px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+getStars(seat.score),
+w/2,
+870
+);
+
+}else{
+
+ctx.fillStyle = "#888";
+
+ctx.font =
+"700 25px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+"今回は残念でした……",
+w/2,
+680
+);
+
+ctx.fillText(
+"次のチャンスに期待！",
+w/2,
+725
+);
+
+}
+
+
+/* 枚数 */
+
+ctx.fillStyle = "#999";
+
+ctx.font =
+"700 19px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+"申込枚数 " +
+lastResult.ticketCount +
+"枚",
+w/2,
+950
+);
+
+
+/* 下部 */
+
+ctx.strokeStyle = "#ddd";
+
+ctx.beginPath();
+
+ctx.moveTo(140,1020);
+ctx.lineTo(w-140,1020);
+
+ctx.stroke();
+
+ctx.fillStyle = "#999";
+
+ctx.font =
+"700 17px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillText(
+"非公式・架空のチケット抽選シミュレーター",
+w/2,
+1080
+);
+
+ctx.font =
+"900 25px -apple-system,BlinkMacSystemFont,sans-serif";
+
+ctx.fillStyle = "#111";
+
+ctx.fillText(
+"LIVE TICKET SIMULATOR",
+w/2,
+1160
+);
+
+
+/* PNG化 */
+
+canvas.toBlob(function(blob){
+
+if(!blob){
+
+reject();
+
+return;
+
+}
+
+resolve(blob);
+
+},"image/png");
+
 });
 
+}
 
-document
-.getElementById("retryButton")
-.addEventListener("click",function(){
 
-location.reload();
+/* =========================
+   共有
+========================= */
+
+async function shareResult(){
+
+const button =
+document.getElementById("shareButton");
+
+button.disabled = true;
+
+button.textContent =
+"画像を作成中…";
+
+
+try{
+
+const blob =
+await createShareImage();
+
+
+const file =
+new File(
+[blob],
+"live-ticket-result.png",
+{
+type:"image/png"
+}
+);
+
+
+const shareText =
+lastResult.win
+
+?
+
+"🎉 LIVE TICKET SIMULATOR\n" +
+lastResult.venue +
+"\n" +
+lastResult.lottery +
+"\n" +
+lastResult.seat.block +
+"\n" +
+lastResult.seat.row +
+"列 " +
+lastResult.seat.numbers.join("・") +
+"番\n" +
+lastResult.seat.luck +
+"\n" +
+getStars(lastResult.seat.score)
+
+:
+
+"😭 LIVE TICKET SIMULATOR\n" +
+lastResult.venue +
+"\n" +
+lastResult.lottery +
+"\n" +
+"今回は落選…";
+
+
+/*
+iPhone / Android
+標準共有メニュー
+*/
+
+if(
+navigator.share &&
+navigator.canShare &&
+navigator.canShare({
+files:[file]
+})
+){
+
+await navigator.share({
+
+title:
+"LIVE TICKET SIMULATOR",
+
+text:
+shareText,
+
+files:[
+file
+]
 
 });
 
+}else if(navigator.share){
 
-},900);
+await navigator.share({
 
-},900);
+title:
+"LIVE TICKET SIMULATOR",
 
-},900);
+text:
+shareText
+
+});
+
+}else{
+
+/*
+PCなど共有API非対応の場合
+画像を新しいタブで表示
+*/
+
+const url =
+URL.createObjectURL(blob);
+
+window.open(url,"_blank");
+
+alert(
+"この端末では標準共有機能に対応していません。\n画像が新しい画面で開きます。"
+);
+
+}
+
+}catch(error){
+
+console.log(error);
+
+}finally{
+
+button.disabled = false;
+
+button.textContent =
+"📤 結果をシェア";
+
+}
 
 }
 

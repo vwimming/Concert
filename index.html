@@ -805,7 +805,7 @@ LIVE TICKET SIMULATION<br><br>
 
 </div>
 
-<canvas id="shareCanvas" width="1080" height="1350"></canvas>
+<canvas id="shareCanvas" width="1080" height="1470"></canvas>
 
 <script>
 /* =========================
@@ -2224,6 +2224,17 @@ height
 
 }
 
+const SHARE_QR_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANgAAADYAQMAAACz7r+uAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAABVklEQVRYhe2XQQ7EIAhFceUxvKnam3oMVzJ80HSa2c7iL0qa1vi6APIFFHnttb9ZVrOVtYskHQ2P2eBj+FRftil7nRmZ+V3zSOb5RBg1W0i0TC8EUGyXnOks3WQxhZYJdFC6eS/F0v2rFw4WZwyyiOf3/FGwbeWaxfZ6fuwSMajBdGBbYAtJvzVBxFwHyYUbGIkmZBl+h9M1AjhFloudop/Ud5/xEbGtCdTWtLVblggfG/Fus1w6ktes9t37SdiXXtEJHDMyqMHz6+NUWDq6JmInBpwrV/ClMQewMcxPVrMW5IvOamslZKeJmg7ijLW5R1UutmuWV4GoC8LJdhNtEYALZDGyyLjGHzUiecxSHCxvp0MQ6Z772Rjcrd6fHCAGToY7iWDsa6gFp35xMs+ytyjgngcr8zueyzftkZqOQROuAxcEwnjqhYT5GYvbXVyYOdlrr/3FPlBJdmIoDRLHAAAAAElFTkSuQmCC";
+
+function loadShareQR(){
+return new Promise(function(resolve,reject){
+const img = new Image();
+img.onload = function(){ resolve(img); };
+img.onerror = function(){ reject(new Error("QRコード画像の読み込みに失敗しました。")); };
+img.src = SHARE_QR_SRC;
+});
+}
+
 async function createShareImage(){
 
 const canvas = document.getElementById("shareCanvas");
@@ -2233,6 +2244,7 @@ const w = canvas.width;
 const h = canvas.height;
 
 const logo = await loadLogoForCanvas();
+const qr = await loadShareQR();
 
 /* 背景 */
 ctx.fillStyle = "#111";
@@ -2278,34 +2290,28 @@ ctx.stroke();
 /* VENUE */
 ctx.fillStyle = "#999";
 ctx.font = "700 20px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText("VENUE",w/2,390);
 
 ctx.fillStyle = "#111";
 ctx.font = "900 32px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText(lastResult.venue,w/2,435);
 
 /* LOTTERY */
 ctx.fillStyle = "#999";
 ctx.font = "700 20px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText("LOTTERY",w/2,500);
 
 ctx.fillStyle = "#111";
 ctx.font = "800 27px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText(lastResult.lottery,w/2,545);
 
 /* GATE */
 ctx.fillStyle = "#999";
 ctx.font = "700 20px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText("GATE",w/2,610);
 
 ctx.fillStyle = "#111";
 ctx.font = "900 35px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText(lastResult.gate,w/2,660);
 
 if(lastResult.win){
@@ -2314,12 +2320,10 @@ const seat = lastResult.seat;
 
 ctx.fillStyle = "#999";
 ctx.font = "700 20px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText("YOUR SEAT",w/2,735);
 
 ctx.fillStyle = "#111";
 ctx.font = "900 30px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText(seat.block,w/2,785);
 
 ctx.font = "900 38px -apple-system,BlinkMacSystemFont,sans-serif";
@@ -2334,11 +2338,9 @@ w/2,
 );
 
 ctx.font = "900 28px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText(seat.luck,w/2,930);
 
 ctx.font = "900 34px -apple-system,BlinkMacSystemFont,sans-serif";
-
 ctx.fillText(getStars(seat.score),w/2,980);
 
 }else{
@@ -2369,22 +2371,16 @@ ctx.moveTo(140,1110);
 ctx.lineTo(w-140,1110);
 ctx.stroke();
 
-ctx.fillStyle = "#999";
-ctx.font = "700 17px -apple-system,BlinkMacSystemFont,sans-serif";
+/* QRコード */
+ctx.drawImage(qr,420,1140,240,240);
+
+ctx.fillStyle = "#777";
+ctx.font = "700 20px -apple-system,BlinkMacSystemFont,sans-serif";
 
 ctx.fillText(
-"非公式・架空のチケット抽選シミュレーター",
+"こちらのQRコードからサイトに飛べます。",
 w/2,
-1170
-);
-
-drawContainedImage(
-ctx,
-logo,
-350,
-1190,
-380,
-80
+1415
 );
 
 return new Promise(function(resolve,reject){
@@ -2432,6 +2428,16 @@ const shareText =
 "あなたも今すぐチケドロ！で遊ぼう👇\n" +
 "https://vwimming.github.io/Concert/";
 
+/* 共有文をクリップボードにも用意しておく。
+   LINE等が画像だけを受け取る場合でも、貼り付けですぐ使えます。 */
+try{
+if(navigator.clipboard && navigator.clipboard.writeText){
+await navigator.clipboard.writeText(shareText);
+}
+}catch(e){
+console.log("共有文のコピーはスキップしました。");
+}
+
 if(
 navigator.share &&
 navigator.canShare &&
@@ -2458,7 +2464,7 @@ const url = URL.createObjectURL(blob);
 window.open(url,"_blank");
 
 alert(
-"この端末では標準共有機能に対応していません。画像を新しい画面で表示します。"
+"この端末では標準共有機能に対応していません。画像を新しい画面で表示します。\n\n共有文はコピーされています。"
 );
 
 }

@@ -525,12 +525,32 @@ margin-top:23px;
 
 .share-button{
 padding:15px;
-border:none;
+border:1px solid #d8e6df;
 border-radius:11px;
-background:#111;
-color:white;
+background:#f2f8f5;
+color:#315d4b;
 font-weight:900;
 font-size:14px;
+}
+
+.share-note{
+margin-bottom:9px;
+color:#777;
+font-size:11px;
+font-weight:700;
+line-height:1.6;
+}
+
+.retry-button{
+background:#f2f6fb;
+border-color:#dbe5f0;
+color:#31516f;
+}
+
+.home-button{
+background:#f7f7f7;
+border-color:#e2e2e2;
+color:#555;
 }
 
 .retry-button,.home-button{
@@ -821,7 +841,7 @@ dome:[
 
 {name:"東京ドーム",location:"東京都文京区",ready:true},
 
-{name:"京セラドーム大阪",location:"大阪府大阪市",ready:false},
+{name:"京セラドーム大阪",location:"大阪府大阪市",ready:true},
 
 {name:"バンテリンドーム ナゴヤ",location:"愛知県名古屋市",ready:false},
 
@@ -1809,6 +1829,50 @@ message +
 
 loading.style.display = "block";
 
+setTimeout(function(){
+loading.scrollIntoView({
+behavior:"smooth",
+block:"center"
+});
+},80);
+
+}
+
+/* =========================
+   SAME VENUE RESET
+========================= */
+
+function resetForSameVenue(){
+
+lotteryRunning = false;
+selectedLottery = "";
+ticketCount = 2;
+lastResult = null;
+
+document.getElementById("ticketCount").textContent = "2";
+
+document.querySelectorAll(".lottery-option").forEach(function(button){
+button.classList.remove("selected");
+button.disabled = false;
+});
+
+document.getElementById("minus").disabled = false;
+document.getElementById("plus").disabled = false;
+
+const lotteryButton = document.getElementById("lotteryButton");
+lotteryButton.disabled = true;
+lotteryButton.textContent = "🎫 抽選する";
+
+document.getElementById("loading").innerHTML = "";
+document.getElementById("loading").style.display = "none";
+document.getElementById("result").innerHTML = "";
+document.getElementById("result").style.display = "none";
+
+document.getElementById("selectedVenueText").textContent =
+selectedVenue ? selectedVenue.name : "";
+
+showScreen("settingScreen");
+
 }
 
 /* =========================
@@ -1897,9 +1961,12 @@ seat.score +
 
 "<div class='result-buttons'>" +
 
-"<button id='shareButton' class='share-button'>📤 結果をシェア</button>" +
+"<button id='retryButton' class='retry-button'>🔄 もう一度同じ会場で抽選</button>" +
 
-"<button id='retryButton' class='retry-button'>🔄 もう一度抽選する</button>" +
+"<div>" +
+"<div class='share-note'>ぜひ共有してください！</div>" +
+"<button id='shareButton' class='share-button'>📤 結果を共有する</button>" +
+"</div>" +
 
 "<button id='homeButton' class='home-button'>🏠 最初に戻る</button>" +
 
@@ -1956,9 +2023,12 @@ lastResult.gate +
 
 "<div class='result-buttons'>" +
 
-"<button id='shareButton' class='share-button'>📤 結果をシェア</button>" +
+"<button id='retryButton' class='retry-button'>🔄 もう一度同じ会場で抽選</button>" +
 
-"<button id='retryButton' class='retry-button'>🔄 もう一度抽選する</button>" +
+"<div>" +
+"<div class='share-note'>ぜひ共有してください！</div>" +
+"<button id='shareButton' class='share-button'>📤 結果を共有する</button>" +
+"</div>" +
 
 "<button id='homeButton' class='home-button'>🏠 最初に戻る</button>" +
 
@@ -1978,7 +2048,7 @@ block:"start"
 });
 
 document.getElementById("retryButton").addEventListener("click",function(){
-goHome();
+resetForSameVenue();
 });
 
 document.getElementById("homeButton").addEventListener("click",function(){
@@ -2357,37 +2427,10 @@ const file = new File(
 {type:"image/png"}
 );
 
-const shareText = lastResult.win
-
-?
-
-"🎫 チケドロ！\n" +
-lastResult.venue +
-"\n" +
-lastResult.lottery +
-"\n" +
-lastResult.gate +
-"\n" +
-lastResult.seat.block +
-"\n" +
-lastResult.seat.row +
-"列 " +
-lastResult.seat.numbers.join("・") +
-"番\n" +
-lastResult.seat.luck +
-"\n" +
-getStars(lastResult.seat.score)
-
-:
-
-"🎫 チケドロ！\n" +
-lastResult.venue +
-"\n" +
-lastResult.lottery +
-"\n" +
-lastResult.gate +
-"\n" +
-"😭 今回は落選…";
+const shareText =
+"🎫 架空チケット抽選体験【チケドロ！】\n" +
+"あなたも今すぐチケドロ！で遊ぼう👇\n" +
+"https://vwimming.github.io/Concert/";
 
 if(
 navigator.share &&
@@ -2427,7 +2470,7 @@ console.log(error);
 }finally{
 
 button.disabled = false;
-button.textContent = "📤 結果をシェア";
+button.textContent = "📤 結果を共有する";
 
 }
 

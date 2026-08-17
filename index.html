@@ -72,6 +72,7 @@ z-index:20;
 }
 
 .header-logo{
+cursor:pointer;
 width:72px;
 height:34px;
 object-fit:contain;
@@ -820,6 +821,11 @@ document.querySelectorAll(".logo-target").forEach(function(img){
 img.src = LOGO_SRC;
 });
 
+/* ヘッダーのチケドロ！ロゴからホームへ */
+document.querySelector(".header-logo").addEventListener("click",function(){
+goHome();
+});
+
 /* =========================
    BASIC DATA
 ========================= */
@@ -843,7 +849,7 @@ dome:[
 
 {name:"京セラドーム大阪",location:"大阪府大阪市",ready:true},
 
-{name:"バンテリンドーム ナゴヤ",location:"愛知県名古屋市",ready:false},
+{name:"バンテリンドーム ナゴヤ",location:"愛知県名古屋市",ready:true},
 
 {name:"みずほPayPayドーム福岡",location:"福岡県福岡市",ready:false},
 
@@ -1120,8 +1126,8 @@ function getLuck(score){
 if(score === 5) return "🌟 超神席！！";
 if(score === 4) return "🔥 神席クラス！";
 if(score === 3) return "✨ かなり良い席！";
-
-return "😢 ちょっと遠め…";
+if(score === 2) return "😢 ちょっと遠め…";
+return "💤 かなり遠め…";
 
 }
 
@@ -1130,8 +1136,8 @@ function getStars(score){
 if(score === 5) return "★★★★★";
 if(score === 4) return "★★★★☆";
 if(score === 3) return "★★★☆☆";
-
-return "★★☆☆☆";
+if(score === 2) return "★★☆☆☆";
+return "★☆☆☆☆";
 
 }
 
@@ -1561,6 +1567,360 @@ luck:getLuck(score)
 }
 
 /* =========================
+   VANTELIN DOME NAGOYA
+   スタンドの基本構造は公式座席案内等を参考にしたシミュレーション用データ。
+   1〜24列：1階 / 25〜34列：2階 / 35〜47列：3階 / 51〜61列：5階
+========================= */
+
+function createVantelinArena(){
+
+/*
+  バンテリンドーム アリーナ
+  3塁側 → 1塁側へブロック番号が増える想定。
+  A2〜A16 / B1〜B17 / C1〜C17 / D3〜D15 /
+  E4〜E14 / F6・7・11・12
+*/
+
+const blockData = [
+  {letter:"A", numbers:Array.from({length:15},(_,i)=>i+2)},
+  {letter:"B", numbers:Array.from({length:17},(_,i)=>i+1)},
+  {letter:"C", numbers:Array.from({length:17},(_,i)=>i+1)},
+  {letter:"D", numbers:Array.from({length:13},(_,i)=>i+3)},
+  {letter:"E", numbers:Array.from({length:11},(_,i)=>i+4)},
+  {letter:"F", numbers:[6,7,11,12]}
+];
+
+const selectedBlock = randomFrom(blockData);
+const blockNumber = randomFrom(selectedBlock.numbers);
+
+const row = Math.floor(Math.random() * 15) + 1;
+const firstNumber = Math.floor(Math.random() * (12 - ticketCount + 1)) + 1;
+const numbers = [];
+
+for(let i=0;i<ticketCount;i++){
+  numbers.push(firstNumber + i);
+}
+
+/* アリーナの後ろ2ブロックを星3、それ以外を星4。
+   Aブロックの最前ブロックだけ星5。 */
+let score;
+
+if(selectedBlock.letter === "A"){
+  score = 5;
+}else if(
+  selectedBlock.letter === "F" ||
+  (selectedBlock.letter === "E" && blockNumber >= 13)
+){
+  score = 3;
+}else{
+  score = 4;
+}
+
+/* 2・8ゲートをアリーナ全体に対応させる。 */
+const gate = randomFrom(["2ゲート","8ゲート"]);
+
+return {
+  gate:gate,
+  block:"アリーナ " + selectedBlock.letter + blockNumber + "ブロック",
+  row:row,
+  numbers:numbers,
+  score:score,
+  luck:getLuck(score)
+};
+
+}
+
+/* =========================
+   VANTELIN LOWER STAND
+   1〜47列 / 1〜432番 or 1〜454番
+========================= */
+
+function getVantelinLowerStartRow(number){
+
+if(number <= 80) return 16;
+if(number <= 140) return 9;
+if(number <= 320) return 1;
+if(number <= 340) return 4;
+if(number <= 360) return 7;
+if(number <= 380) return 11;
+if(number <= 400) return 17;
+if(number <= 420) return 22;
+if(number <= 432) return 26;
+
+return 35;
+
+}
+
+function createVantelinLowerStand(side, isLimited){
+
+const isR = side === "1塁側";
+
+let firstNumber;
+let row;
+
+if(isLimited){
+
+  /* 見切れ：前方側433〜460、後方側455〜470 */
+  if(Math.random() < 0.5){
+    firstNumber = Math.floor(Math.random() * (460 - 433 - ticketCount + 2)) + 433;
+    row = Math.floor(Math.random() * 34) + 1;
+  }else{
+    firstNumber = Math.floor(Math.random() * (470 - 455 - ticketCount + 2)) + 455;
+    row = Math.floor(Math.random() * 13) + 35;
+  }
+
+}else{
+
+  /* 通常席は1〜432番の前方＋1〜454番の後方 */
+  if(Math.random() < 0.72){
+    firstNumber = Math.floor(Math.random() * (432 - ticketCount + 1)) + 1;
+    const minRow = getVantelinLowerStartRow(firstNumber);
+    row = Math.floor(Math.random() * (34 - minRow + 1)) + minRow;
+  }else{
+    firstNumber = Math.floor(Math.random() * (454 - ticketCount + 1)) + 1;
+    row = Math.floor(Math.random() * 13) + 35;
+  }
+
+}
+
+const numbers = [];
+for(let i=0;i<ticketCount;i++){
+  numbers.push(firstNumber + i);
+}
+
+/* 前5列=4、中間=3、後5列=2 */
+let score;
+if(row <= 5){
+  score = 4;
+}else if(row >= 43){
+  score = 2;
+}else{
+  score = 3;
+}
+
+/* 見切れは悪い席として扱う */
+if(isLimited) score = 2;
+
+/* 1ゲートは中心寄りの席が基本。2/8ゲートはそれぞれの側の下段全体。 */
+let gate;
+
+if(isLimited){
+  gate = isR ? "7ゲート" : "3ゲート";
+}else if(isR){
+  gate = randomFrom(["1ゲート","8ゲート"]);
+}else{
+  gate = randomFrom(["1ゲート","2ゲート"]);
+}
+
+return {
+  gate:gate,
+  block:"スタンド " + side,
+  row:row,
+  numbers:numbers,
+  score:score,
+  luck:getLuck(score),
+  sideCode:isR ? "R" : "L",
+  rowLabel:(isR ? "R" : "L") + row
+};
+
+}
+
+/* =========================
+   VANTELIN UPPER STAND
+   51〜61列 / 1〜400番
+========================= */
+
+function createVantelinUpperStand(side){
+
+const isR = side === "1塁側";
+const row = Math.floor(Math.random() * 11) + 51;
+const firstNumber = Math.floor(Math.random() * (400 - ticketCount + 1)) + 1;
+const numbers = [];
+
+for(let i=0;i<ticketCount;i++){
+  numbers.push(firstNumber + i);
+}
+
+/* 上段は基本星2、最後方5列(57〜61)は星1 */
+const score = row >= 57 ? 1 : 2;
+
+return {
+  gate:isR ? "7ゲート" : "3ゲート",
+  block:"スタンド " + side,
+  row:row,
+  numbers:numbers,
+  score:score,
+  luck:getLuck(score),
+  sideCode:isR ? "R" : "L",
+  rowLabel:(isR ? "R" : "L") + row
+};
+
+}
+
+/* =========================
+   VANTELIN OUTFIELD
+   見切れ抽選用
+========================= */
+
+function createVantelinOutfield(isLimited){
+
+const side = Math.random() < 0.5 ? "ライト外野" : "レフト外野";
+const gate = side === "ライト外野" ? "7ゲート" : "3ゲート";
+const row = Math.floor(Math.random() * 21) + 1;
+const firstNumber = Math.floor(Math.random() * (400 - ticketCount + 1)) + 1;
+const numbers = [];
+
+for(let i=0;i<ticketCount;i++){
+  numbers.push(firstNumber + i);
+}
+
+return {
+  gate:gate,
+  block:(isLimited ? "見切れ " : "") + side + "外野",
+  row:row,
+  numbers:numbers,
+  score:2,
+  luck:getLuck(2)
+};
+
+}
+
+/* =========================
+   VANTELIN SEAT
+========================= */
+
+function createVantelinSeat(){
+
+/*
+  ゲート別の座席傾向
+  2ゲート：アリーナ基本＋3塁側下段
+  8ゲート：アリーナ基本＋1塁側下段
+  1ゲート：下段基本＋約30%でアリーナ後方
+  3ゲート：3塁側上段基本＋ごく稀に下段後方
+  7ゲート：1塁側上段基本＋ごく稀に下段後方
+*/
+
+/* 見切れ・機材開放席は下段の見切れ範囲を使用 */
+if(selectedLottery === "release"){
+  return createVantelinLowerStand(
+    Math.random() < 0.5 ? "1塁側" : "3塁側",
+    true
+  );
+}
+
+/* 一般：上段を約50% */
+if(selectedLottery === "general"){
+
+  const r = Math.random();
+
+  if(r < 0.003){
+    const rear = createVantelinArena();
+    rear.gate = randomFrom(["2ゲート","8ゲート"]);
+    rear.score = rear.score === 5 ? 3 : 3;
+    rear.luck = getLuck(rear.score);
+    return rear;
+  }
+
+  if(r < 0.503){
+    return createVantelinUpperStand(
+      Math.random() < 0.5 ? "1塁側" : "3塁側"
+    );
+  }
+
+  if(r < 0.83){
+    return createVantelinLowerStand(
+      Math.random() < 0.5 ? "1塁側" : "3塁側",
+      false
+    );
+  }
+
+  return createVantelinOutfield(false);
+
+}
+
+/* FC・先行：アリーナはごく稀。上段・下段後方・外野中心 */
+if(selectedLottery === "fc"){
+
+  const r = Math.random();
+
+  if(r < 0.015){
+    const rear = createVantelinArena();
+    rear.gate = randomFrom(["2ゲート","8ゲート"]);
+    rear.score = 3;
+    rear.luck = getLuck(3);
+    return rear;
+  }
+
+  if(r < 0.50){
+    return createVantelinUpperStand(
+      Math.random() < 0.5 ? "1塁側" : "3塁側"
+    );
+  }
+
+  if(r < 0.82){
+    const seat = createVantelinLowerStand(
+      Math.random() < 0.5 ? "1塁側" : "3塁側",
+      false
+    );
+    return seat;
+  }
+
+  return createVantelinOutfield(false);
+
+}
+
+/* FC最速：アリーナ・下段・外野。ゲート傾向を優先 */
+if(selectedLottery === "fast"){
+
+  const r = Math.random();
+
+  /* 2・8ゲートはアリーナ基本 */
+  if(r < 0.55){
+    const seat = createVantelinArena();
+    seat.gate = Math.random() < 0.5 ? "2ゲート" : "8ゲート";
+    return seat;
+  }
+
+  /* 1ゲート：下段中心＋約30%でアリーナ後方 */
+  if(r < 0.80){
+    const gate1 = Math.random() < 0.70;
+
+    if(gate1){
+      const seat = createVantelinLowerStand(
+        Math.random() < 0.5 ? "1塁側" : "3塁側",
+        false
+      );
+      seat.gate = "1ゲート";
+      return seat;
+    }
+
+    const rear = createVantelinArena();
+    rear.gate = "1ゲート";
+    rear.score = 3;
+    rear.luck = getLuck(3);
+    return rear;
+  }
+
+  /* 2・8ゲートの下段席 */
+  if(r < 0.92){
+    const side = Math.random() < 0.5 ? "1塁側" : "3塁側";
+    const seat = createVantelinLowerStand(side,false);
+    seat.gate = side === "1塁側" ? "8ゲート" : "2ゲート";
+    return seat;
+  }
+
+  return createVantelinOutfield(false);
+
+}
+
+/* 念のためのフォールバック */
+return createVantelinUpperStand(
+  Math.random() < 0.5 ? "1塁側" : "3塁側"
+);
+
+}
+
+/* =========================
    OTHER VENUES
 ========================= */
 
@@ -1743,9 +2103,14 @@ if(
 selectedVenue &&
 selectedVenue.name === "東京ドーム"
 ){
-
 return createTokyoDomeSeat();
+}
 
+if(
+selectedVenue &&
+selectedVenue.name === "バンテリンドーム ナゴヤ"
+){
+return createVantelinSeat();
 }
 
 return createOtherVenueSeat();
@@ -1774,6 +2139,19 @@ return randomFrom(["20ゲート","21ゲート","22ゲート","23ゲート","24�
 }
 
 return randomFrom(["11ゲート","20ゲート","21ゲート","22ゲート","23ゲート","24ゲート","25ゲート"]);
+
+}
+
+
+if(selectedVenue && selectedVenue.name === "バンテリンドーム ナゴヤ"){
+
+if(selectedLottery === "release") return randomFrom(["3ゲート","7ゲート"]);
+
+if(selectedLottery === "general") return randomFrom(["3ゲート","4ゲート","5ゲート","6ゲート","7ゲート"]);
+
+if(selectedLottery === "fc") return randomFrom(["1ゲート","2ゲート","3ゲート","5ゲート","7ゲート","8ゲート"]);
+
+return randomFrom(["1ゲート","2ゲート","8ゲート"]);
 
 }
 
@@ -1937,7 +2315,7 @@ seat.gate +
 "<div class='seat-main'>" +
 seat.block +
 "<br>" +
-seat.row +
+(seat.rowLabel || seat.row) +
 "列 " +
 numbers +
 "番" +
@@ -2329,7 +2707,7 @@ ctx.fillText(seat.block,w/2,785);
 ctx.font = "900 38px -apple-system,BlinkMacSystemFont,sans-serif";
 
 ctx.fillText(
-seat.row +
+(seat.rowLabel || seat.row) +
 "列 " +
 seat.numbers.join("・") +
 "番",
